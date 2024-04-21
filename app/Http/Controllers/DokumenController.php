@@ -16,7 +16,7 @@ class DokumenController extends Controller
      */
     public function index()
     {
-        $data['dokumens'] = Dokumen::all();
+        $data['dokumens'] = Dokumen::where('upload_by', \Auth::user()->id)->get();
 
         return view('dokumen.index', $data);
     }

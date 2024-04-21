@@ -105,12 +105,14 @@
                             <span class="menu-title text-truncate" data-i18n="Modal Examples">Manage Dokumen</span>
                         </a>
                     </li>
+                    @if(Auth::user()->role == 'Kurikulum')
                     <li class="nav-item {!!(Request::is('user*')) ? ' active' : '' !!}">
                         <a class="d-flex align-items-center" href="{{ route('user.index') }}">
                             <i data-feather="users"></i>
                             <span class="menu-title text-truncate" data-i18n="Modal Examples">Manage User</span>
                         </a>
                     </li>
+                    @endif
                     <li class="nav-item">
                         <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                             @csrf
