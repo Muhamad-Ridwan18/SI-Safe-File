@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title','Manage Slider Image')
+@section('title','Documents')
 @section('content')
 
     <div class="app-content content">
@@ -13,7 +13,7 @@
                         <h2 class="content-header-title float-start mb-0">Dokumen</h2>
                         <div class="breadcrumb-wrapper">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="{{ route('dokumen.index') }}">Dokumen</a>
+                                <li class="breadcrumb-item"><a href="{{ route('documents.index') }}">Dokumen</a>
                                 </li>
                                 <li class="breadcrumb-item active">Edit
                                 </li>
@@ -29,9 +29,9 @@
                      <div class="col-md-12">
                         <div class="card">
                            <div class="card-body">
-                            {{ Form::model($dokumen,['url'=>route('dokumen.update',[$dokumen->id]),'class'=>'form-horizontal','method'=>'PUT','files'=>true])}}
+                            {{ Form::model($documents,['url'=>route('documents.update',[$documents->id]),'class'=>'form-horizontal','method'=>'PUT','files'=>true])}}
                             
-                            @include('dokumen._form')  
+                            @include('documents._form')  
                    
                              {!! Form::close() !!}  
                            </div>

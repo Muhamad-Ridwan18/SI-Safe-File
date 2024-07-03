@@ -22,6 +22,6 @@
                 </div>
             </div>
         </div> --}}
-        <h4>Selamat datang, <b>{{ Auth::user()->name }}</b></h4>
+        <h4>Selamat datang, <b>{{ Auth::user()->name }}</b></h4>    
     </div>
 </div> @endsection

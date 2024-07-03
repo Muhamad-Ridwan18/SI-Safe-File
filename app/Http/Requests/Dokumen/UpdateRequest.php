@@ -24,16 +24,16 @@ class UpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'nama_dokumen'                => 'required',
-            'file_dokumen'                => 'required',
+            'title'                => 'required',
+            'file_path'                => 'required',
         ];
     }
 
     public function messages()
     {
         return [
-            'nama_dokumen.required'               => 'Nama dokumen tidak boleh kosong',
-            'file_dokumen.required'               => 'File dokumen tidak boleh kosong',
+            'title.required'               => 'Nama dokumen tidak boleh kosong',
+            'file_path.required'               => 'File dokumen tidak boleh kosong',
         ];
     }
 }

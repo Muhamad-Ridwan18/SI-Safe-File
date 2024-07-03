@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Dokumen;
+use App\Models\Document;
 
 class DokumenTableSeeder extends Seeder
 {
@@ -16,10 +16,10 @@ class DokumenTableSeeder extends Seeder
     public function run()
     {
         $data = [
-            ['nama_dokumen'=>'Dokumen Administrasi','file_dokumen'=>'administrasi.pdf', 'upload_by'=>'1'],
-            ['nama_dokumen'=>'Dokumen Kurikulum','file_dokumen'=>'kurikulum.pdf', 'upload_by'=>'2'],
+            ['title'=>'Dokumen Administrasi','file_path'=>'administrasi.pdf', 'user_id'=>'1'],
+            ['title'=>'Dokumen Kurikulum','file_path'=>'kurikulum.pdf', 'user_id'=>'2'],
         ];
 
-        Dokumen::insert($data);
+        Document::insert($data);
     }
 }

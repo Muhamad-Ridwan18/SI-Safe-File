@@ -42,4 +42,24 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function documents()
+    {
+        return $this->hasMany(Document::class);
+    }
+
+    public function accessRequests()
+    {
+        return $this->hasMany(AccessRequest::class, 'requester_id');
+    }
+
+    public function accessApprovals()
+    {
+        return $this->hasMany(AccessRequest::class, 'approver_id');
+    }
+
+    public function sharedDocuments()
+    {
+        return $this->hasMany(SharedDocument::class, 'shared_with');
+    }
 }

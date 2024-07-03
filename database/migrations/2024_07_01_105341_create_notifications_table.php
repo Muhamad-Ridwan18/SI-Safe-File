@@ -13,11 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('dokumen', function (Blueprint $table) {
-            $table->id();
-            $table->string('nama_dokumen');
-            $table->text('file_dokumen');
-            $table->integer('upload_by');
+        Schema::create('notifications', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->string('type');
+            $table->morphs('notifiable');
+            $table->text('data');
+            $table->timestamp('read_at')->nullable();
             $table->timestamps();
         });
     }
@@ -29,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('dokumen');
+        Schema::dropIfExists('notifications');
     }
 };

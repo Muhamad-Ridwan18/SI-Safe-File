@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title','Manage Slider Image')
+@section('title','Documents')
 @section('content')
 
     <div class="app-content content">
@@ -13,7 +13,7 @@
                         <h2 class="content-header-title float-start mb-0">Dokumen</h2>
                         <div class="breadcrumb-wrapper">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="{{ route('dokumen.index') }}">Dokumen</a>
+                                <li class="breadcrumb-item"><a href="{{ route('documents.index') }}">Dokumen</a>
                                 </li>
                                 <li class="breadcrumb-item active">create
                                 </li>
@@ -29,9 +29,22 @@
                      <div class="col-md-12">
                         <div class="card">
                            <div class="card-body">
-                            {{ Form::open(['url'=>route('dokumen.store'),'class'=>'form-horizontal','files'=>true])}}
-
-                            @include('dokumen._form')  
+                            {{ Form::open(['url'=>route('documents.shareDocument'),'class'=>'form-horizontal','files'=>true])}}
+                              
+                                <div class="card-body">
+                                   <div class="form-group">
+                                        <label for="share" class="control-label">Share Dokumen</label>
+                                        {{ Form::hidden('document_id', $document->id) }}
+                                        {{ Form::select('shared_with', $users->pluck('name','id'),null,['class'=>'form-control','placeholder'=>'Select Share'])}}
+                                   </div>
+                                </div>
+                                <div class="card-footer">
+                                   <div class="form-group">
+                                       <button type="submit" class="btn btn-success btn-sm"><i class="fas fa-save"></i> Simpan</button>
+                                           
+                                       <a href="{{ route('documents.index') }}" class="btn btn-danger btn-sm"><i class="fas fa-backward"></i> Kembali</a>
+                                   </div>
+                                 </div>
                    
                              {!! Form::close() !!}  
                            </div>

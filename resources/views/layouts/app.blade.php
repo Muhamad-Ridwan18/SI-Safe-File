@@ -40,14 +40,22 @@
                                 <span class="avatar-status-online"></span>
                             </span>
                         </a>
-                        {{-- <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdown-user">
-                            <a class="dropdown-item" href="auth-login-cover.html">
-                                <i class="me-50" data-feather="power"></i> Logout </a>
-                        </div> --}}
+                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdown-user">
+                            <!-- Tautan Notifikasi -->
+                            <a class="dropdown-item" href="#">
+                                <i class="me-50" data-feather="bell"></i> Notifikasi
+                                <span class="badge bg-danger">4</span> <!-- Jumlah notifikasi -->
+                            </a>
+                            <!-- Tautan Logout -->
+                            <a class="dropdown-item" href="{{ route('logout') }}">
+                                <i class="me-50" data-feather="power"></i> Logout
+                            </a>
+                        </div>
                     </li>
                 </ul>
             </div>
         </nav>
+        
         <!-- BEGIN: Main Menu-->
         <div class="main-menu menu-fixed menu-light menu-accordion menu-shadow" data-scroll-to-active="true">
             <div class="navbar-header">
@@ -99,10 +107,25 @@
                             <span class="menu-title text-truncate" data-i18n="Modal Examples">Dashboard</span>
                         </a>
                     </li>
-                    <li class="nav-item {!!(Request::is('dokumen*')) ? ' active' : '' !!}">
-                        <a class="d-flex align-items-center" href="{{ route('dokumen.index') }}">
+                    @if (Auth::user()->role == 'Guru')
+                        
+                    <li class="nav-item {!!(Request::is('documents*')) ? ' active' : '' !!}">
+                        <a class="d-flex align-items-center" href="{{ route('documents.index') }}">
                             <i data-feather="file"></i>
                             <span class="menu-title text-truncate" data-i18n="Modal Examples">Manage Dokumen</span>
+                        </a>
+                    </li>
+                    @endif
+                    <li class="nav-item {!!(Request::is('shared_documents*')) ? ' active' : '' !!}">
+                        <a class="d-flex align-items-center" href="{{ route('shared_documents.index') }}">
+                            <i data-feather="share"></i> 
+                            <span class="menu-title text-truncate" data-i18n="Modal Examples">Dokumen Di terima</span>
+                        </a>
+                    </li>
+                    <li class="nav-item {!!(Request::is('#*')) ? ' active' : '' !!}">
+                        <a class="d-flex align-items-center" href="{{ route('access-requests.index') }}">
+                            <i data-feather="inbox"></i>
+                            <span class="menu-title text-truncate" data-i18n="Modal Examples">Akses Request</span>
                         </a>
                     </li>
                     @if(Auth::user()->role == 'Kurikulum')
