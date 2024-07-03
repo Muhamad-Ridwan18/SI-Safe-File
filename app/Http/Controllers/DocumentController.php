@@ -51,7 +51,7 @@ class DocumentController extends Controller
     {
         $input = $request->all();
         if($request->hasFile('file_path')){
-            $File = date('Ymdhis') . $request->file('file_path')->getClientOriginalName();
+            $File = $request->file('file_path')->getClientOriginalName();
             $Path = base_path().'/'.'public'.'/uploads';
             $request->file('file_path')->move($Path, $File);
 
