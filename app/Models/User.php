@@ -48,18 +48,4 @@ class User extends Authenticatable
         return $this->hasMany(Document::class);
     }
 
-    public function accessRequests()
-    {
-        return $this->hasMany(AccessRequest::class, 'requester_id');
-    }
-
-    public function accessApprovals()
-    {
-        return $this->hasMany(AccessRequest::class, 'approver_id');
-    }
-
-    public function sharedDocuments()
-    {
-        return $this->hasMany(SharedDocument::class, 'shared_with');
-    }
 }

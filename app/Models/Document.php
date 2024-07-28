@@ -23,13 +23,4 @@ class Document extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function accessRequests()
-    {
-        return $this->hasMany(AccessRequest::class);
-    }
-
-    public function sharedDocuments()
-    {
-        return $this->hasMany(SharedDocument::class);
-    }
 }
