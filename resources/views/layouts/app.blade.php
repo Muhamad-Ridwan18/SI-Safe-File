@@ -41,13 +41,12 @@
                             </span>
                         </a>
                         <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdown-user">
-                            <!-- Tautan Notifikasi -->
-                            <a class="dropdown-item" href="#">
-                                <i class="me-50" data-feather="bell"></i> Notifikasi
-                                <span class="badge bg-danger">4</span> <!-- Jumlah notifikasi -->
-                            </a>
+                            
                             <!-- Tautan Logout -->
-                            <a class="dropdown-item" href="{{ route('logout') }}">
+                            <form id="logout-form-a" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                @csrf
+                            </form>
+                            <a class="dropdown-item" onclick="event.preventDefault(); document.getElementById('logout-form-a').submit();">
                                 <i class="me-50" data-feather="power"></i> Logout
                             </a>
                         </div>
@@ -107,58 +106,44 @@
                             <span class="menu-title text-truncate" data-i18n="Modal Examples">Dashboard</span>
                         </a>
                     </li>
-                    @if (Auth::user()->role == 'Guru')
-                        
-                    <li class="nav-item {!!(Request::is('documents*')) ? ' active' : '' !!}">
-                        <a class="d-flex align-items-center" href="{{ route('documents.index') }}">
-                            <i data-feather="file"></i>
-                            <span class="menu-title text-truncate" data-i18n="Modal Examples">Manage Dokumen</span>
-                        </a>
-                    </li>
-                    @endif
-                    <li class="nav-item {!!(Request::is('shared_documents*')) ? ' active' : '' !!}">
-                        <a class="d-flex align-items-center" href="{{ route('shared_documents.index') }}">
-                            <i data-feather="share"></i> 
-                            <span class="menu-title text-truncate" data-i18n="Modal Examples">Dokumen Di terima</span>
-                        </a>
-                    </li>
-                    <li class="nav-item {!!(Request::is('#*')) ? ' active' : '' !!}">
-                        <a class="d-flex align-items-center" href="{{ route('access-requests.index') }}">
-                            <i data-feather="inbox"></i>
-                            <span class="menu-title text-truncate" data-i18n="Modal Examples">Akses Request</span>
-                        </a>
-                    </li>
-                    @if(Auth::user()->role == 'Kurikulum')
-                    <li class="nav-item {!!(Request::is('user*')) ? ' active' : '' !!}">
-                        <a class="d-flex align-items-center" href="{{ route('user.index') }}">
-                            <i data-feather="users"></i>
-                            <span class="menu-title text-truncate" data-i18n="Modal Examples">Manage User</span>
-                        </a>
-                    </li>
-                    @endif
-                    <li class="nav-item">
-                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                            @csrf
-                        </form>
-                        <a class="d-flex align-items-center" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                            <i data-feather="log-out"></i>
-                            <span class="menu-title text-truncate" data-i18n="Modal Examples">Logout</span>
-                        </a>
-                    </li>
-                    {{-- <li class=" nav-item">
+                    <!-- Pengamanan Menu -->
+                    <li class="nav-item has-sub {!! (Request::is('documents*') || Request::is('decrypt*')) ? 'in-active' : '' !!}">
                         <a class="d-flex align-items-center" href="#">
-                            <i data-feather="user"></i>
-                            <span class="menu-title text-truncate" data-i18n="User">Master Data</span>
+                            <i data-feather="shield"></i>
+                            <span class="menu-title text-truncate" data-i18n="Pengamanan">Pengamanan</span>
                         </a>
                         <ul class="menu-content">
-                            <li>
-                                <a class="d-flex align-items-center" href="app-user-list.html">
-                                    <i data-feather="circle"></i>
-                                    <span class="menu-item text-truncate" data-i18n="List">List</span>
+                            <li class="nav-item {!! (Request::is('documents*')) ? 'active' : '' !!}">
+                                <a class="d-flex align-items-center" href="{{ route('documents.index') }}">
+                                    <i data-feather="lock"></i>
+                                    <span class="menu-title text-truncate" data-i18n="Enkripsi Dokumen">Enkripsi Dokumen</span>
+                                </a>
+                            </li>
+                            <li class="nav-item {!! (Request::is('decrypt*')) ? 'active' : '' !!}">
+                                <a class="d-flex align-items-center" href="{{ route('decrypt.index') }}">
+                                    <i data-feather="unlock"></i>
+                                    <span class="menu-title text-truncate" data-i18n="Dekripsi Dokumen">Dekripsi Dokumen</span>
                                 </a>
                             </li>
                         </ul>
-                    </li> --}}
+                    </li>
+
+                    <!-- Pengujian Menu -->
+                    <li class="nav-item {!! (Request::is('test*')) ? 'in-active' : '' !!}">
+                        <a class="d-flex align-items-center" href="#">
+                            <i data-feather="activity"></i>
+                            <span class="menu-title text-truncate" data-i18n="Pengujian">Pengujian</span>
+                        </a>
+                        <ul class="menu-content">
+                            <li class="nav-item {!! (Request::is('test*')) ? 'active' : '' !!}">
+                                <a class="d-flex align-items-center" href="{{ route('test.index') }}">
+                                    <i data-feather="trending-up"></i>
+                                    <span class="menu-title text-truncate" data-i18n="Avalanche Test">Avalanche Test</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
                 </ul>
             </div>
         </div> @yield('content') <div class="sidenav-overlay"></div>
@@ -185,6 +170,7 @@
         <script src="{{ asset('app-assets/vendors/js/tables/datatable/responsive.bootstrap5.js') }}"></script>
         <script src="{{ asset('app-assets/vendors/js/forms/select/select2.full.min.js') }}"></script>
         <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+        
         @include('sweetalert::alert')
         @stack('scripts')
 
@@ -195,6 +181,13 @@
 
             $(document).ready(function () {
                 $('#basic-datatables').DataTable();
+            });
+            $(document).ready(function () {
+                $('#basic-datatables-2').DataTable();
+            });
+            
+            $(document).ready(function () {
+                $('#decrypt-table').DataTable();
             });
         </script>
         <script>

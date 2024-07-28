@@ -78,6 +78,7 @@
                                     </div>
                                     <button type="submit" class="btn btn-primary w-100" tabindex="4">Sign in</button>
                                 </form>
+                                <a href="{{ route('register') }}" class="d-none d-sm-inline-block mt-2 ">Create an account</a>
                             </div>
                         </div>
                     </div>

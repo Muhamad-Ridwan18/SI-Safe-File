@@ -15,8 +15,13 @@
         "laravel/tinker": "^2.7",
         "laravel/ui": "^4.2",
         "laravelcollective/html": "^6.4",
+        "phpseclib/phpseclib": "^3.0",
         "realrashid/sweet-alert": "^7.0",
+        "setasign/fpdf": "^1.8",
+        "setasign/fpdi": "^2.6",
         "simplesoftwareio/simple-qrcode": "~1",
+        "smalot/pdfparser": "^2.10",
+        "tecnickcom/tcpdf": "^6.7",
         "zxing/qr-reader": "^1.2"
     },
     "require-dev": {

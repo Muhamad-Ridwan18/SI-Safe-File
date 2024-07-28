@@ -16,8 +16,11 @@ return new class extends Migration
         Schema::create('documents', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('title');
-            $table->string('file_path');
+            $table->string('secret_key');
+            $table->string('original_filename');
+            $table->string('encrypted_filename');
+            $table->text('encryption_key');
+            $table->string('iv');
             $table->timestamps();
         });
     }

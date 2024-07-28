@@ -11,10 +11,10 @@
                 <div class="content-header-left col-md-9 col-12 mb-1">
                     <div class="row breadcrumbs-top">
                         <div class="col-12">
-                            <h2 class="content-header-title float-start mb-0">Enkripsi Documents</h2>
+                            <h2 class="content-header-title float-start mb-0">Dekripsi Dokument</h2>
                             <div class="breadcrumb-wrapper">
                                 <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="{{ route('documents.index') }}">Enkripsi Documents</a>
+                                    <li class="breadcrumb-item"><a href="{{ route('documents.index') }}">Dekripsi Dokument</a>
                                     </li>
                                     <li class="breadcrumb-item active">Index
                                     </li>
@@ -32,13 +32,10 @@
                             <div class="card">
                                 <div class="card-header">
                                     <h4 class="card-title">Data Terenkripsi</h4>
-                                    <a href="{{ route('documents.create') }}" class="btn btn-primary btn-sm">
-                                        <i class="fa fa-plus"></i> Add
-                                    </a>
                                 </div>
                                 <div class="card-body">
                                     <div class="table-responsive">
-                                        <table id="basic-datatables" class="display table table-striped table-hover">
+                                        <table id="decrypt-table" class="display table table-striped table-hover">
                                             <thead>
                                                 <tr>
                                                     <th style="width: 5%">No</th>
@@ -59,8 +56,8 @@
                                                     <td>{{ $document->secret_key }}</td>
                                                     <td class="text-center">
                                                         <div class="form-button-action">
-                                                            <button type="button" class="btn btn-link btn-danger btn-sm delete" data-id="{{ $document->id }}">
-                                                                <i data-feather='trash-2'></i>
+                                                            <button type="button" class="btn btn-link btn-warning btn-sm decrypt" data-id="{{ $document->id }}">
+                                                                <i data-feather='unlock'></i>
                                                             </button>
                                                         </div>
                                                     </td>
@@ -83,39 +80,40 @@
     </div>
     <!-- END: Content-->
 
-    <!-- BEGIN: Modal -->
-<div class="modal fade" id="decryptModal" tabindex="-1" role="dialog" aria-labelledby="decryptModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="decryptModalLabel">Decrypt Document</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="decryptForm">
-                    @csrf
-                    <input type="hidden" name="document_id" id="document_id">
-                    <div class="form-group">
-                        <label for="secret_key">Secret Key</label>
-                        <input type="text" class="form-control" id="secret_key" name="secret_key" required>
-                    </div>
-                    <div class="form-group mt-2">
-                        <button type="submit" class="btn btn-primary">Decrypt</button>
-                    </div>
-                </form>
-                <div id="decryptMessage" class="mt-2"></div>
+    <div class="modal fade" id="decryptModal" tabindex="-1" role="dialog" aria-labelledby="decryptModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="decryptModalLabel">Decrypt Document</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true"></span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="decryptMessage"></div>
+                    <form id="decryptForm">
+                        @csrf
+                        <input type="hidden" name="document_id" id="document_id">
+                        <div class="form-group">
+                            <label for="secret_key">Secret Key</label>
+                            <input type="text" class="form-control" id="secret_key" name="secret_key" required>
+                        </div>
+                        <div class="form-group mt-2">
+                            <button type="submit" class="btn btn-primary">Decrypt</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<!-- END: Modal -->
 
 @endsection
 
 @push('scripts')
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
+
 $(document).ready(function() {
 
     $('.delete').click(function(e) {
@@ -172,12 +170,10 @@ $(document).ready(function() {
             $('#document_id').val(id);
             $('#decryptModal').modal('show');
         });
-    
+
         $('#decryptForm').on('submit', function(e) {
             e.preventDefault();
-    
             var formData = $(this).serialize();
-    
             $.ajax({
                 url: '{{ route('documents.decrypt') }}',
                 method: 'post',
@@ -190,16 +186,26 @@ $(document).ready(function() {
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
-    
+
                     $('#decryptMessage').html('<div class="alert alert-success">Document decrypted and downloaded successfully.</div>');
+                    $('#decryptForm')[0].reset();
                     $('#decryptModal').modal('hide');
+
+                    setTimeout(function() {
+                        $('#decryptMessage').html('');
+                    }, 3000);
                 },
                 error: function(xhr) {
                     $('#decryptMessage').html('<div class="alert alert-danger">Error: ' + xhr.responseText + '</div>');
+
+                    setTimeout(function() {
+                        $('#decryptMessage').html('');
+                    }, 3000);
                 }
             });
         });
     });
-    </script>
+</script>
+
     
 @endpush

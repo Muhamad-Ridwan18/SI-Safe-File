@@ -10,17 +10,17 @@ class Document extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'title', 'file_path',
+        'user_id',  
+        'original_filename',
+        'encrypted_filename',
+        'encryption_key',
+        'iv',
+        'secret_key',
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function accessCodes()
-    {
-        return $this->hasMany(AccessCode::class);
     }
 
     public function accessRequests()

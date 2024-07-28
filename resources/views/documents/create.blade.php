@@ -31,7 +31,30 @@
                            <div class="card-body">
                             {{ Form::open(['url'=>route('documents.store'),'class'=>'form-horizontal','files'=>true])}}
 
-                            @include('documents._form')  
+                            <div class="card-body">
+                                <div class="form-group mt-1">
+                                  <label>File Dokumen</label>
+                                    {{ Form::file('pdf',['class'=>'form-control', 'accept' => 'application/pdf'])}}
+                                  @if ($errors->has('pdf')) <span class="help-block" style="color:red">{{ $errors->first('pdf') }}</span> @endif
+                              
+                                  @if(!empty($dokumen))
+                                    <a href="{{ asset('uploads/'.$dokumen->file_dokumen) }}" download target="_blank"><small class="text-success">Download dokumen <i data-feather="download"></i></small></a>
+                                  @endif
+                                 </div>
+                                <div class="form-group mt-1">
+                                    <label>Secret Key</label>
+                                    {{ Form::text('secret_key',null,['class'=>'form-control','placeholder'=>'Secret Key'])}}      
+                                 </div>
+                              
+                              </div>
+                              
+                              <div class="card-footer">
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-success btn-sm"><i class="fas fa-save"></i> Enkripsi Dokumen</button>
+                                        
+                                    <a href="{{ route('documents.index') }}" class="btn btn-danger btn-sm"><i class="fas fa-backward"></i> Kembali</a>
+                                </div>
+                              </div>
                    
                              {!! Form::close() !!}  
                            </div>

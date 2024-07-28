@@ -11,10 +11,10 @@
                 <div class="content-header-left col-md-9 col-12 mb-1">
                     <div class="row breadcrumbs-top">
                         <div class="col-12">
-                            <h2 class="content-header-title float-start mb-0">Enkripsi Documents</h2>
+                            <h2 class="content-header-title float-start mb-0">Test avalanche</h2>
                             <div class="breadcrumb-wrapper">
                                 <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="{{ route('documents.index') }}">Enkripsi Documents</a>
+                                    <li class="breadcrumb-item"><a href="{{ route('test.index') }}">Test avalanche</a>
                                     </li>
                                     <li class="breadcrumb-item active">Index
                                     </li>
@@ -32,13 +32,11 @@
                             <div class="card">
                                 <div class="card-header">
                                     <h4 class="card-title">Data Terenkripsi</h4>
-                                    <a href="{{ route('documents.create') }}" class="btn btn-primary btn-sm">
-                                        <i class="fa fa-plus"></i> Add
-                                    </a>
+                                    
                                 </div>
                                 <div class="card-body">
                                     <div class="table-responsive">
-                                        <table id="basic-datatables" class="display table table-striped table-hover">
+                                        <table id="basic-datatables-2" class="display table table-striped table-hover">
                                             <thead>
                                                 <tr>
                                                     <th style="width: 5%">No</th>
@@ -49,19 +47,21 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @foreach($documents as $document)
+                                                @foreach($document as $document)
                                                 <tr>
                                                     <td>{{ $loop->iteration }}</td>
                                                     <td>{{ $document->original_filename }}</td>
                                                     <td>
-                                                        <a href="{{ route('documents.download', $document->id) }}">{{ $document->encrypted_filename }}</a>
+                                                        {{ $document->encrypted_filename }}
                                                     </td>
                                                     <td>{{ $document->secret_key }}</td>
                                                     <td class="text-center">
                                                         <div class="form-button-action">
-                                                            <button type="button" class="btn btn-link btn-danger btn-sm delete" data-id="{{ $document->id }}">
-                                                                <i data-feather='trash-2'></i>
-                                                            </button>
+                                                            
+                                                             <form action="{{ route('documents.test_avalanche', $document->id) }}" method="POST">
+                                                                 @csrf
+                                                                 <button type="submit" class="btn btn-primary">Test Avalanche Effect</button>
+                                                            </form>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -69,6 +69,47 @@
                                             </tbody>
                                         </table>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title">Hasil Test</h4>
+                                    
+                                </div>
+                                <div class="card-body">
+                                    <!-- Add a div for displaying the results -->
+                                        <div class="table-responsive">
+                                             <table id="basic-datatables" class="display table table-striped table-hover">
+                                             <thead>
+                                                  <tr>
+                                                       <th>Original File</th>
+                                                       <th>Modified File</th>
+                                                       <th>Original File Size (bytes)</th>
+                                                       <th>Modified File Size (bytes)</th>
+                                                       <th>Bit Difference</th>
+                                                       <th>Percentage Difference (%)</th>
+                                                  </tr>
+                                             </thead>
+                                             <tbody id="avalancheResults">
+                                                  @if (isset($avalancheResults))
+                                                       <tr>
+                                                            <td>{{ $avalancheResults['originalFileName'] }}</td>
+                                                            <td>{{ $avalancheResults['encryptedFileName'] }}</td>
+                                                            <td>{{ $avalancheResults['originalFileSize'] }}</td>
+                                                            <td>{{ $avalancheResults['modifiedFileSize'] }}</td>
+                                                            <td>{{ $avalancheResults['bitDifference'] }}</td>
+                                                            <td>{{ $avalancheResults['percentageDifference'] }}%</td>
+                                                       </tr>
+                                                  @else
+                                                       <tr>
+                                                            <td colspan="6">No avalanche results found.</td>
+                                                       </tr>
+                                                  @endif
+                                             </tbody>
+                                             </table>
+                                        </div>
                                 </div>
                             </div>
                         </div>
@@ -167,39 +208,33 @@ $(document).ready(function() {
 
 <script>
     $(document).ready(function() {
-        $('.decrypt').click(function() {
-            var id = $(this).data('id');
-            $('#document_id').val(id);
-            $('#decryptModal').modal('show');
-        });
-    
-        $('#decryptForm').on('submit', function(e) {
-            e.preventDefault();
-    
-            var formData = $(this).serialize();
-    
-            $.ajax({
-                url: '{{ route('documents.decrypt') }}',
-                method: 'post',
-                data: formData,
-                success: function(response) {
-                    // Create a temporary anchor element to trigger the download
-                    var link = document.createElement('a');
-                    link.href = response.fileUrl;
-                    link.download = response.fileUrl.split('/').pop(); // Extract filename from URL
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-    
-                    $('#decryptMessage').html('<div class="alert alert-success">Document decrypted and downloaded successfully.</div>');
-                    $('#decryptModal').modal('hide');
-                },
-                error: function(xhr) {
-                    $('#decryptMessage').html('<div class="alert alert-danger">Error: ' + xhr.responseText + '</div>');
-                }
-            });
+    $('form[action*="test_avalanche"]').on('submit', function(e) {
+        e.preventDefault();
+        var form = $(this);
+        $.ajax({
+            url: form.attr('action'),
+            method: form.attr('method'),
+            data: form.serialize(),
+            success: function(response) {
+                var results = response.avalancheResults;
+                var resultsRow = '<tr>'
+                    + '<td>' + results.originalFileName + '</td>'
+                    + '<td>' + results.encryptedFileName + '</td>'
+                    + '<td>' + results.originalFileSize + '</td>'
+                    + '<td>' + results.modifiedFileSize + '</td>'
+                    + '<td>' + results.bitDifference + '</td>'
+                    + '<td>' + results.percentageDifference + '%</td>'
+                    + '</tr>';
+
+                $('#avalancheResults').html(resultsRow);
+            },
+            error: function(xhr) {
+                alert('Error: ' + xhr.responseText);
+            }
         });
     });
+});
+
     </script>
     
 @endpush
