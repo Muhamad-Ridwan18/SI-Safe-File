@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 
-use App\Models\SharedDocument;
 use App\Models\Document;
 use App\Models\User;
 

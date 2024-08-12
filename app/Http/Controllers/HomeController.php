@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Document;
 
 class HomeController extends Controller
 {
@@ -26,5 +27,11 @@ class HomeController extends Controller
         return view('home');
     }
 
+    public function dashboard()  
+    {
+        $document = Document::all();
+        
+        return view('welcome', compact('document'));
+    }
     
 }

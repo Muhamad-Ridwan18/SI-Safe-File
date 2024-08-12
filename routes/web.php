@@ -30,6 +30,8 @@ Route::middleware(['auth'])->group(function () {
         return view('welcome');
     });
 
+
+    Route::get('/', [App\Http\Controllers\HomeController::class, 'dashboard'])->name('dashboard');
     Route::resource('user', App\Http\Controllers\UserController::class);
     Route::post('user/delete', 'App\Http\Controllers\UserController@delete')->name('user.delete');
 
