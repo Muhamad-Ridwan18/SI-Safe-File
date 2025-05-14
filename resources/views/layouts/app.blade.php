@@ -131,6 +131,8 @@
         <button class="btn btn-primary btn-icon scroll-top" type="button">
             <i data-feather="arrow-up"></i>
         </button>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
         <script src="{{ asset('app-assets/vendors/js/vendors.min.js') }}"></script>
         <script src="{{ asset('app-assets/js/core/app-menu.js') }}"></script>
         <script src="{{ asset('app-assets/js/core/app.js') }}"></script>
