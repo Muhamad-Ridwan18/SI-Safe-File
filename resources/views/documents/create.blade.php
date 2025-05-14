@@ -42,17 +42,17 @@
                                   @endif
                                  </div>
                                 <div class="form-group mt-1">
-                                    <label>Secret Key</label>
-                                    {{ Form::text('secret_key',null,['class'=>'form-control','placeholder'=>'Secret Key'])}}      
+                                    <label>Password</label>
+                                    {{ Form::text('secret_key',null,['class'=>'form-control','placeholder'=>'Password (Optional)'])}}      
                                  </div>
                               
                               </div>
                               
                               <div class="card-footer">
                                 <div class="form-group">
-                                    <button type="submit" class="btn btn-success btn-sm"><i class="fas fa-save"></i> Enkripsi Dokumen</button>
+                                    <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Save Dokumen</button>
                                         
-                                    <a href="{{ route('documents.index') }}" class="btn btn-danger btn-sm"><i class="fas fa-backward"></i> Kembali</a>
+                                    <a href="{{ route('documents.index') }}" class="btn btn-danger"><i class="fas fa-backward"></i> Kembali</a>
                                 </div>
                               </div>
                    

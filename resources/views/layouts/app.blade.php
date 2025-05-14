@@ -107,41 +107,12 @@
                         </a>
                     </li>
                     <!-- Pengamanan Menu -->
-                    <li class="nav-item has-sub {!! (Request::is('documents*') || Request::is('decrypt*')) ? 'in-active' : '' !!}">
-                        <a class="d-flex align-items-center" href="#">
+                    <li class="nav-item {!! (Request::is('documents*')) ? 'in-active' : '' !!}">
+                        <a class="d-flex align-items-center" href="{{ route('documents.index') }}">
                             <i data-feather="shield"></i>
-                            <span class="menu-title text-truncate" data-i18n="Pengamanan">Pengamanan</span>
+                            <span class="menu-title text-truncate" data-i18n="Pengamanan">Dokumen</span>
                         </a>
-                        <ul class="menu-content">
-                            <li class="nav-item {!! (Request::is('documents*')) ? 'active' : '' !!}">
-                                <a class="d-flex align-items-center" href="{{ route('documents.index') }}">
-                                    <i data-feather="lock"></i>
-                                    <span class="menu-title text-truncate" data-i18n="Enkripsi Dokumen">Enkripsi Dokumen</span>
-                                </a>
-                            </li>
-                            <li class="nav-item {!! (Request::is('decrypt*')) ? 'active' : '' !!}">
-                                <a class="d-flex align-items-center" href="{{ route('decrypt.index') }}">
-                                    <i data-feather="unlock"></i>
-                                    <span class="menu-title text-truncate" data-i18n="Dekripsi Dokumen">Dekripsi Dokumen</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-
-                    <!-- Pengujian Menu -->
-                    <li class="nav-item {!! (Request::is('test*')) ? 'in-active' : '' !!}">
-                        <a class="d-flex align-items-center" href="#">
-                            <i data-feather="activity"></i>
-                            <span class="menu-title text-truncate" data-i18n="Pengujian">Pengujian</span>
-                        </a>
-                        <ul class="menu-content">
-                            <li class="nav-item {!! (Request::is('test*')) ? 'active' : '' !!}">
-                                <a class="d-flex align-items-center" href="{{ route('test.index') }}">
-                                    <i data-feather="trending-up"></i>
-                                    <span class="menu-title text-truncate" data-i18n="Avalanche Test">Avalanche Test</span>
-                                </a>
-                            </li>
-                        </ul>
+                        
                     </li>
 
                 </ul>

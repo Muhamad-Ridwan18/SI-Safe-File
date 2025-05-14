@@ -11,10 +11,10 @@
                 <div class="content-header-left col-md-9 col-12 mb-1">
                     <div class="row breadcrumbs-top">
                         <div class="col-12">
-                            <h2 class="content-header-title float-start mb-0">Enkripsi Documents</h2>
+                            <h2 class="content-header-title float-start mb-0">Data Documents</h2>
                             <div class="breadcrumb-wrapper">
                                 <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="{{ route('documents.index') }}">Enkripsi Documents</a>
+                                    <li class="breadcrumb-item"><a href="{{ route('documents.index') }}">Data Documents</a>
                                     </li>
                                     <li class="breadcrumb-item active">Index
                                     </li>
@@ -31,8 +31,8 @@
                         <div class="col-md-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <h4 class="card-title">Data Terenkripsi</h4>
-                                    <a href="{{ route('documents.create') }}" class="btn btn-primary btn-sm">
+                                    <h4 class="card-title">Data Dokumen</h4>
+                                    <a href="{{ route('documents.create') }}" class="btn btn-primary">
                                         <i class="fa fa-plus"></i> Add
                                     </a>
                                 </div>
@@ -43,8 +43,6 @@
                                                 <tr>
                                                     <th style="width: 5%">No</th>
                                                     <th>Document Name</th>
-                                                    <th>Document Encrypt</th>
-                                                    <th>Secret Key</th>
                                                     <th style="width: 20%" class="text-center">Action</th>
                                                 </tr>
                                             </thead>
@@ -52,18 +50,23 @@
                                                 @foreach($documents as $document)
                                                 <tr>
                                                     <td>{{ $loop->iteration }}</td>
-                                                    <td>{{ $document->original_filename }}</td>
-                                                    <td>
-                                                        <a href="{{ route('documents.download', $document->id) }}">{{ $document->encrypted_filename }}</a>
-                                                    </td>
-                                                    <td>{{ $document->secret_key }}</td>
+                                                    <td><a href="{{ route('documents.download', $document->id) }}">{{ $document->original_filename }}</a></td>
                                                     <td class="text-center">
-                                                        <div class="form-button-action">
-                                                            <button type="button" class="btn btn-link btn-danger btn-sm delete" data-id="{{ $document->id }}">
-                                                                <i data-feather='trash-2'></i>
-                                                            </button>
+                                                        <div class="d-flex justify-content-center gap-1">
+                                                            @if ($document->secret_key)
+                                                            <div class="form-button-action">
+                                                                <button type="button" class="btn btn-link btn-warning decrypt" data-id="{{ $document->id }}">
+                                                                    <i data-feather='unlock'></i>
+                                                                </button>
+                                                            </div>
+                                                            @endif
+                                                            <div class="form-button-action">
+                                                                <button type="button" class="btn btn-link btn-danger delete" data-id="{{ $document->id }}">
+                                                                    <i data-feather='trash-2'></i>
+                                                                </button>
+                                                            </div>
                                                         </div>
-                                                    </td>
+                                                    </td>                                                   
                                                 </tr>
                                                 @endforeach
                                             </tbody>

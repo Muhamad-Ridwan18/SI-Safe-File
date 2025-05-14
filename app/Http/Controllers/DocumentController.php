@@ -116,56 +116,36 @@ class DocumentController extends Controller
 
     public function store(Request $request)
     {
+        // dd($request->all());
         $request->validate([
             'pdf' => 'required|file|mimes:pdf',
-            'secret_key' => 'required|string', 
+            'secret_key' => 'nullable|string',
         ]);
 
         $file = $request->file('pdf');
         $originalFileName = $file->getClientOriginalName();
-        $filePath = $file->storeAs('pdfs', $originalFileName, 'public'); 
+        $filePath = $file->storeAs('pdfs', $originalFileName, 'public');
 
-        $publicKeyPath = storage_path('app/public/public_key.pem'); 
-        $secretKey = $request->input('secret_key'); 
+        $secretKey = $request->input('secret_key');
 
-        $encryptedFilePath = $this->encryptPdf($filePath, $publicKeyPath, $originalFileName, $secretKey);
+        if (!empty($secretKey)) {
+            // dd('aaaaaaaa');
+            $publicKeyPath = storage_path('app/public/public_key.pem');
+            $this->encryptPdf($filePath, $publicKeyPath, $originalFileName, $secretKey);
+        } else {
+            // Simpan dokumen tanpa enkripsi
+            Document::create([
+                'user_id' => auth()->user()->id,
+                'original_filename' => $originalFileName,
+                'encrypted_filename' => null,
+                'encryption_key' => null,
+                'iv' => null,
+                'secret_key' => null,
+            ]);
+        }
 
         return redirect()->route('documents.index');
     }
-
-    public function showDecrypt()
-    {
-        $documents = Document::where('user_id', auth()->user()->id)->get();
-        
-        return view('decrypt-document.index', compact('documents'));    
-    }
-
-
-    public function decrypt(Request $request)
-    {
-        $request->validate([
-            'document_id' => 'required|exists:documents,id',
-            'secret_key' => 'required|string',
-        ]);
-
-        $document = Document::findOrFail($request->document_id);
-        $providedSecretKey = $request->secret_key;
-
-        // Verify the secret key
-        if (!Hash::check($providedSecretKey, $document->secret_key)) {
-            return response()->json(['message' => 'Invalid secret key'], 403);
-        }
-
-        // Proceed with decryption
-        $privateKeyPath = storage_path('app/public/private_key.pem');
-        $encryptedFilePath = $document->encrypted_filename;
-        $decryptedFilePath = $this->decryptPdf($encryptedFilePath, $privateKeyPath);
-
-        $fileUrl = asset('storage/' . $decryptedFilePath);
-
-        return response()->json(['fileUrl' => $fileUrl]);
-    }
-
 
 
     private function encryptPdf($filePath, $publicKeyPath, $originalFileName, $secretKey)
@@ -203,6 +183,39 @@ class DocumentController extends Controller
         ]);
 
         return $encryptedFilePath;
+    }
+
+    public function showDecrypt()
+    {
+        $documents = Document::where('user_id', auth()->user()->id)->get();
+        
+        return view('decrypt-document.index', compact('documents'));    
+    }
+
+
+    public function decrypt(Request $request)
+    {
+        $request->validate([
+            'document_id' => 'required|exists:documents,id',
+            'secret_key' => 'required|string',
+        ]);
+
+        $document = Document::findOrFail($request->document_id);
+        $providedSecretKey = $request->secret_key;
+
+        // Verify the secret key
+        if (!Hash::check($providedSecretKey, $document->secret_key)) {
+            return response()->json(['message' => 'Invalid secret key'], 403);
+        }
+
+        // Proceed with decryption
+        $privateKeyPath = storage_path('app/public/private_key.pem');
+        $encryptedFilePath = $document->encrypted_filename;
+        $decryptedFilePath = $this->decryptPdf($encryptedFilePath, $privateKeyPath);
+
+        $fileUrl = asset('storage/' . $decryptedFilePath);
+
+        return response()->json(['fileUrl' => $fileUrl]);
     }
 
     private function decryptPdf($encryptedFilePath, $privateKeyPath)
@@ -259,7 +272,7 @@ class DocumentController extends Controller
     public function download($id)
     {
         $document = Document::findOrFail($id);
-        $filePath = $document->encrypted_filename;
+        $filePath = $document->encrypted_filename ?? 'pdfs/' . $document->original_filename;
 
         if (Storage::disk('public')->exists($filePath)) {
             return response()->download(storage_path("app/public/$filePath"), $document->original_filename);
@@ -267,7 +280,6 @@ class DocumentController extends Controller
 
         return redirect()->back()->with('error', 'File not found.');
     }
-
 
 }
 

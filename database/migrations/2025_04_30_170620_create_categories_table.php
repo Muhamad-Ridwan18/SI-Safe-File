@@ -13,15 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('documents', function (Blueprint $table) {
+        Schema::create('categories', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('user_id');
-            $table->string('secret_key')->nullable();
-            $table->string('original_filename')->nullable();
-            $table->string('encrypted_filename')->nullable();
-            $table->text('encryption_key')->nullable();
-            $table->string('iv')->nullable();
-            $table->uuid('category_id')->nullable();
+            $table->string('name');
             $table->timestamps();
         });
     }
@@ -33,6 +27,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('documents');
+        Schema::dropIfExists('categories');
     }
 };
