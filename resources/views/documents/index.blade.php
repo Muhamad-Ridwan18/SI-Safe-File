@@ -35,6 +35,7 @@
                                     <a href="{{ route('documents.create') }}" class="btn btn-primary">
                                         <i class="fa fa-plus"></i> Add
                                     </a>
+                                    <a href="{{ route('documents.export', ) }}" class="btn btn-success">Export to Excel</a>
                                 </div>
                                 <div class="card-body">
                                     <div class="table-responsive">
@@ -43,6 +44,7 @@
                                                 <tr>
                                                     <th style="width: 5%">No</th>
                                                     <th>Document Name</th>
+                                                    <th>Category</th>
                                                     <th style="width: 20%" class="text-center">Action</th>
                                                 </tr>
                                             </thead>
@@ -51,6 +53,7 @@
                                                 <tr>
                                                     <td>{{ $loop->iteration }}</td>
                                                     <td><a href="{{ route('documents.download', $document->id) }}">{{ $document->original_filename }}</a></td>
+                                                    <td>{{ $document->category->name ?? '-' }}</td>
                                                     <td class="text-center">
                                                         <div class="d-flex justify-content-center gap-1">
                                                             @if ($document->secret_key)

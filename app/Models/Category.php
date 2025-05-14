@@ -13,4 +13,9 @@ class Category extends Model
     protected $fillable = [
         'name',
     ];
+
+    public function documents()
+    {
+        return $this->hasMany(Document::class);
+    }
 }

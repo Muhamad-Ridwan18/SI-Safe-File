@@ -18,6 +18,8 @@ use setasign\Fpdi\Fpdi;
 use setasign\Fpdf\Fpdf;
 use Smalot\PdfParser\Parser;
 
+use App\Exports\ExportReportDocument;
+use Maatwebsite\Excel\Facades\Excel;
 
 class DocumentController extends Controller
 {
@@ -28,7 +30,8 @@ class DocumentController extends Controller
      */
     public function index()
     {
-        $documents = Document::where('user_id', auth()->user()->id)->get();
+        $documents = Document::with('category')->where('user_id', auth()->user()->id)->get();
+        // dd($documents);
         return view('documents.index', compact('documents'));
     }
 
@@ -120,9 +123,11 @@ class DocumentController extends Controller
     {
         // dd($request->all());
         $request->validate([
+            'category_id' => 'required|exists:categories,id',
             'pdf' => 'required|file|mimes:pdf',
             'secret_key' => 'nullable|string',
         ]);
+
 
         $file = $request->file('pdf');
         $originalFileName = $file->getClientOriginalName();
@@ -133,10 +138,11 @@ class DocumentController extends Controller
         if (!empty($secretKey)) {
             // dd('aaaaaaaa');
             $publicKeyPath = storage_path('app/public/public_key.pem');
-            $this->encryptPdf($filePath, $publicKeyPath, $originalFileName, $secretKey);
+            $this->encryptPdf($filePath, $publicKeyPath, $originalFileName, $secretKey , $request->category_id);
         } else {
             // Simpan dokumen tanpa enkripsi
             Document::create([
+                'category_id' => $request->category_id,
                 'user_id' => auth()->user()->id,
                 'original_filename' => $originalFileName,
                 'encrypted_filename' => null,
@@ -150,7 +156,7 @@ class DocumentController extends Controller
     }
 
 
-    private function encryptPdf($filePath, $publicKeyPath, $originalFileName, $secretKey)
+    private function encryptPdf($filePath, $publicKeyPath, $originalFileName, $secretKey, $category_id)
     {
         $pdfContent = Storage::disk('public')->get($filePath);
 
@@ -181,7 +187,8 @@ class DocumentController extends Controller
             'encrypted_filename' => $encryptedFilePath,
             'encryption_key' => base64_encode($encryptedKey),
             'iv' => base64_encode($iv),
-            'secret_key' => $hashedSecretKey, // Save the secret key
+            'secret_key' => $hashedSecretKey, 
+            'category_id' => $category_id
         ]);
 
         return $encryptedFilePath;
@@ -275,12 +282,18 @@ class DocumentController extends Controller
     {
         $document = Document::findOrFail($id);
         $filePath = $document->encrypted_filename ?? 'pdfs/' . $document->original_filename;
-
+        // dd($filePath);
         if (Storage::disk('public')->exists($filePath)) {
             return response()->download(storage_path("app/public/$filePath"), $document->original_filename);
         }
 
         return redirect()->back()->with('error', 'File not found.');
+    }
+
+    public function export()
+    {
+        dd('export');
+        return Excel::download(new ExportReportDocument, 'documents.xlsx');
     }
 
 }
