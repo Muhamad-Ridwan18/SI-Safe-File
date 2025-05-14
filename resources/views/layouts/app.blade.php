@@ -100,23 +100,32 @@
             <div class="shadow-bottom"></div>
             <div class="main-menu-content">
                 <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
-                    <li class="nav-item {!!(Request::is('/')) ? ' active' : '' !!}">
+                    {{-- Dashboard --}}
+                    <li class="nav-item {!! Request::is('/') ? ' active' : '' !!}">
                         <a class="d-flex align-items-center" href="/">
-                            <i data-feather="square"></i>
-                            <span class="menu-title text-truncate" data-i18n="Modal Examples">Dashboard</span>
+                            <i data-feather="home"></i> {{-- Ganti dari square ke home --}}
+                            <span class="menu-title text-truncate" data-i18n="Dashboard">Dashboard</span>
                         </a>
-                    </li>
-                    <!-- Pengamanan Menu -->
-                    <li class="nav-item {!! (Request::is('documents*')) ? 'in-active' : '' !!}">
-                        <a class="d-flex align-items-center" href="{{ route('documents.index') }}">
-                            <i data-feather="shield"></i>
-                            <span class="menu-title text-truncate" data-i18n="Pengamanan">Dokumen</span>
-                        </a>
-                        
                     </li>
 
+                    {{-- Dokumen --}}
+                    <li class="nav-item {!! Request::is('documents*') ? ' active' : '' !!}">
+                        <a class="d-flex align-items-center" href="{{ route('documents.index') }}">
+                            <i data-feather="file-text"></i> {{-- Ganti dari shield ke file-text --}}
+                            <span class="menu-title text-truncate" data-i18n="Dokumen">Dokumen</span>
+                        </a>
+                    </li>
+
+                    {{-- Kategori --}}
+                    <li class="nav-item {!! Request::is('categories*') ? ' active' : '' !!}">
+                        <a class="d-flex align-items-center" href="{{ route('categories.index') }}">
+                            <i data-feather="list"></i> {{-- Ganti dari square ke list --}}
+                            <span class="menu-title text-truncate" data-i18n="Kategori">Kategori</span>
+                        </a>
+                    </li>
                 </ul>
             </div>
+
         </div> @yield('content') <div class="sidenav-overlay"></div>
         <div class="drag-target"></div>
         <footer class="footer footer-static footer-light">

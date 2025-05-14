@@ -30,7 +30,6 @@ Route::middleware(['auth'])->group(function () {
         return view('welcome');
     });
 
-
     Route::get('/', [App\Http\Controllers\HomeController::class, 'dashboard'])->name('dashboard');
     Route::resource('user', App\Http\Controllers\UserController::class);
     Route::post('user/delete', 'App\Http\Controllers\UserController@delete')->name('user.delete');
@@ -44,5 +43,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('documents/encrypt', [App\Http\Controllers\DocumentController::class, 'encrypt'])->name('documents.encrypt');
     Route::post('documents/decrypt', [App\Http\Controllers\DocumentController::class, 'decrypt'])->name('documents.decrypt');
     Route::post('documents/test_avalanche/{id}', [App\Http\Controllers\DocumentController::class, 'testAvalancheEffect'])->name('documents.test_avalanche');
+
+    Route::resource('categories', App\Http\Controllers\CategoryController::class);
+    Route::post('categories/delete', [App\Http\Controllers\CategoryController::class, 'delete'])->name('categories.delete');
 
 });

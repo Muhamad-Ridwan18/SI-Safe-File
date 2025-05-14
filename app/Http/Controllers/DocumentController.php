@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 
 use App\Models\Document;
+use App\Models\Category;
 use App\Models\User;
 
 use phpseclib3\Crypt\AES;
@@ -111,7 +112,8 @@ class DocumentController extends Controller
 
     public function create()
     {
-        return view('documents.create');
+        $categories = Category::pluck('name', 'id');
+        return view('documents.create', compact('categories'));
     }
 
     public function store(Request $request)
