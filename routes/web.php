@@ -47,8 +47,9 @@ Route::middleware(['auth'])->group(function () {
         
     // Quick export all documents
     Route::get('/documents/export-all', [App\Http\Controllers\DocumentController::class, 'exportAll'])->name('documents.export-all');
-    Route::post('/folder', [FolderController::class, 'store'])->name('folder.store');
-    Route::post('/folder/{id}/access', [FolderController::class, 'access'])->name('folder.access');
+    Route::post('folder', [FolderController::class, 'store'])->name('folder.store');
+    Route::post('folder/{id}/access', [FolderController::class, 'access'])->name('folder.access');
+    Route::delete('folder/{folder}', [FolderController::class, 'destroy'])->name('folder.destroy');
     Route::resource('folder', App\Http\Controllers\FolderController::class);
 
 

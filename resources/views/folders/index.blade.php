@@ -14,7 +14,7 @@
                             <h2 class="content-header-title float-start mb-0">Data Documents</h2>
                             <div class="breadcrumb-wrapper">
                                 <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="{{ route('documents.index') }}">Data Documents</a>
+                                    <li class="breadcrumb-item"><a href="{{ route('folder.index') }}">Data Documents</a>
                                     </li>
                                     <li class="breadcrumb-item active">Index
                                     </li>
@@ -45,7 +45,7 @@
                                             <div class="col-auto">
                                                 <select id="filterDivisi" name="category_id" class="form-select"
                                                     onchange="document.getElementById('filterForm').submit();">
-                                                    <option value="">Semua Divisi</option>
+                                                    <option value="">Semua Kategori</option>
                                                     @foreach ($categories as $divisi)
                                                         <option value="{{ $divisi->id }}"
                                                             {{ request('category_id') == $divisi->id ? 'selected' : '' }}>
@@ -58,41 +58,79 @@
                                         
                                     </div>
 
+                                    @if (session('success'))
+                                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                            <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                        </div>
+                                    @endif
+
+                                    @if ($errors->any())
+                                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                            <h6 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>Error!</h6>
+                                            <ul class="mb-0">
+                                                @foreach ($errors->all() as $error)
+                                                    <li>{{ $error }}</li>
+                                                @endforeach
+                                            </ul>
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                        </div>
+                                    @endif
 
                                     <!-- Grid Folder View -->
                                     @if ($folders->count())
                                         <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
                                             @foreach ($folders as $folder)
                                                 <div class="col">
-                                                    <a href="{{ route('folder.show', $folder->id) }}"
-                                                        class="text-decoration-none">
-                                                        <div class="card h-100 folder-card border shadow-sm hover-shadow">
+                                                    <div class="card h-100 folder-card border shadow-sm hover-shadow position-relative">
+                                                        <!-- Dropdown Menu -->
+                                                        <div class="dropdown position-absolute" style="top: 10px; right: 10px; z-index: 10;">
+                                                            <button class="btn btn-sm btn-light rounded-circle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                <i class="fas fa-ellipsis-v"></i>
+                                                            </button>
+                                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                                <li><a class="dropdown-item" href="{{ route('folder.edit', $folder->id) }}">
+                                                                    <i class="fas fa-edit me-2"></i>Edit
+                                                                </a></li>
+                                                                <li><hr class="dropdown-divider"></li>
+                                                                <li><a class="dropdown-item text-danger delete-folder" href="#" data-id="{{ $folder->id }}">
+                                                                    <i class="fas fa-trash me-2"></i>Hapus
+                                                                </a></li>
+                                                            </ul>
+                                                        </div>
+
+                                                        <a href="{{ route('folder.show', $folder->id) }}" class="text-decoration-none">
                                                             <div class="card-body text-center p-4">
                                                                 <div class="folder-icon mb-3">
-                                                                    <i class="fas fa-folder text-warning"
-                                                                        style="font-size: 3rem;"></i>
+                                                                    <i class="fas fa-folder text-warning" style="font-size: 3rem;"></i>
                                                                 </div>
-                                                                <div
-                                                                    class="d-flex justify-content-center align-items-center gap-2">
-                                                                    <h5
-                                                                        class="card-title mb-0 text-dark fw-medium text-truncate">
-                                                                        {{ $folder->name }}</h5>
+                                                                <div class="d-flex justify-content-center align-items-center gap-2">
+                                                                    <h5 class="card-title mb-0 text-dark fw-medium text-truncate">
+                                                                        {{ $folder->name }}
+                                                                    </h5>
                                                                     @if ($folder->password)
-                                                                        <i class="fas fa-lock text-secondary"
-                                                                            data-bs-toggle="tooltip"
-                                                                            title="Folder dilindungi password"></i>
+                                                                        <i class="fas fa-lock text-secondary" data-bs-toggle="tooltip" title="Folder dilindungi password"></i>
                                                                     @endif
                                                                 </div>
+                                                                @if($folder->category)
+                                                                    <small class="text-muted">{{ $folder->category->name }}</small>
+                                                                @endif
                                                             </div>
-                                                        </div>
-                                                    </a>
+                                                        </a>
+                                                    </div>
                                                 </div>
                                             @endforeach
                                         </div>
                                     @else
                                         <div class="alert alert-light text-center py-5">
                                             <i class="fas fa-folder-open text-muted me-2 fa-2x"></i>
-                                            <h5 class="mt-3">Belum ada folder.</h5>
+                                            <h5 class="mt-3">
+                                                @if(request('category_id'))
+                                                    Belum ada folder dalam kategori ini.
+                                                @else
+                                                    Belum ada folder.
+                                                @endif
+                                            </h5>
                                         </div>
                                     @endif
 
@@ -155,7 +193,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="divisi" class="form-label fw-semibold">Divisi</label>
+                        <label for="divisi" class="form-label fw-semibold">Kategori</label>
                         <select id="divisi" class="form-select" name="category_id">
                             <option value="">-- Pilih Kategori (opsional) --</option>
                             @foreach ($categories as $category)
@@ -180,11 +218,73 @@
 @endsection
 
 @push('scripts')
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {
             // Toggle export form
             $('#toggleExportForm').click(function() {
                 $('#exportForm').slideToggle('fast');
+            });
+
+            // Handle folder deletion
+            $('.delete-folder').click(function(e) {
+                e.preventDefault();
+                var id = $(this).data('id');
+                var folderName = $(this).closest('.folder-card').find('.card-title').text().trim();
+                
+                swal({
+                    title: 'Apakah Anda yakin?',
+                    text: `Folder "${folderName}" akan dihapus permanen!`,
+                    type: 'warning',
+                    buttons: {
+                        confirm: {
+                            text: 'Ya, Hapus!',
+                            className: 'btn btn-danger'
+                        },
+                        cancel: {
+                            visible: true,
+                            text: 'Batal',
+                            className: 'btn btn-secondary'
+                        }
+                    }
+                }).then((Delete) => {
+                    if (Delete) {
+                        $.ajax({
+                            url: `{{ url('folder') }}/` + id,
+                            method: 'DELETE',
+                            data: {
+                                "_token": "{{ csrf_token() }}"
+                            },
+                            success: function(data) {
+                                swal("Berhasil!", "Folder berhasil dihapus!", {
+                                    icon: "success",
+                                    buttons: {
+                                        confirm: {
+                                            className: 'btn btn-success'
+                                        }
+                                    },
+                                });
+                                location.reload();
+                            },
+                            error: function(xhr) {
+                                var errorMessage = 'Terjadi kesalahan saat menghapus folder.';
+                                if (xhr.responseJSON && xhr.responseJSON.message) {
+                                    errorMessage = xhr.responseJSON.message;
+                                }
+                                swal("Error!", errorMessage, {
+                                    icon: "error",
+                                    buttons: {
+                                        confirm: {
+                                            className: 'btn btn-danger'
+                                        }
+                                    },
+                                });
+                            }
+                        });
+                    } else {
+                        swal.close();
+                    }
+                });
             });
 
             $('.delete').click(function(e) {
@@ -308,4 +408,3 @@
             });
         });
     </script>
-@endpush
