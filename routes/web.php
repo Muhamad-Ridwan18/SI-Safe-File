@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\FileEncryptionController;
 use App\Http\Controllers\RSAController;
+use App\Http\Controllers\FolderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,7 +36,6 @@ Route::middleware(['auth'])->group(function () {
     Route::post('user/delete', 'App\Http\Controllers\UserController@delete')->name('user.delete');
 
     Route::resource('documents', App\Http\Controllers\DocumentController::class);
-    Route::post('documents/delete', 'App\Http\Controllers\DocumentController@delete')->name('documents.delete');
     Route::get('documents/share/{id}', [App\Http\Controllers\DocumentController::class, 'share'])->name('documents.share');
     Route::get('decrypt-documents', [App\Http\Controllers\DocumentController::class, 'showDecrypt'])->name('decrypt.index');
     Route::get('test-documents', [App\Http\Controllers\DocumentController::class, 'test'])->name('test.index');
@@ -43,7 +43,14 @@ Route::middleware(['auth'])->group(function () {
     Route::post('documents/encrypt', [App\Http\Controllers\DocumentController::class, 'encrypt'])->name('documents.encrypt');
     Route::post('documents/decrypt', [App\Http\Controllers\DocumentController::class, 'decrypt'])->name('documents.decrypt');
     Route::post('documents/test_avalanche/{id}', [App\Http\Controllers\DocumentController::class, 'testAvalancheEffect'])->name('documents.test_avalanche');
-    Route::get('/documents/export', [App\Http\Controllers\DocumentController::class, 'export'])->name('documents.export');
+    Route::post('/documents/export', [App\Http\Controllers\DocumentController::class, 'export'])->name('documents.do-export');
+        
+    // Quick export all documents
+    Route::get('/documents/export-all', [App\Http\Controllers\DocumentController::class, 'exportAll'])->name('documents.export-all');
+    Route::post('/folder', [FolderController::class, 'store'])->name('folder.store');
+    Route::post('/folder/{id}/access', [FolderController::class, 'access'])->name('folder.access');
+    Route::resource('folder', App\Http\Controllers\FolderController::class);
+
 
     Route::resource('categories', App\Http\Controllers\CategoryController::class);
     Route::post('categories/delete', [App\Http\Controllers\CategoryController::class, 'delete'])->name('categories.delete');

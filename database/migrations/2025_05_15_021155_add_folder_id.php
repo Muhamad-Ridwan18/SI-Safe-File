@@ -13,17 +13,20 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('documents', function (Blueprint $table) {
+        Schema::create('folders', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('user_id');
-            $table->string('name')->nullable();
-            $table->string('secret_key')->nullable();
-            $table->string('original_filename')->nullable();
-            $table->string('encrypted_filename')->nullable();
-            $table->text('encryption_key')->nullable();
-            $table->string('iv')->nullable();
             $table->uuid('category_id')->nullable();
+            $table->string('name');
+            $table->uuid('parent_id')->nullable(); 
+            $table->string('password')->nullable();
+
             $table->timestamps();
+
+        });
+
+        Schema::table('documents', function (Blueprint $table) {
+            $table->uuid('folder_id')->nullable();
         });
     }
 
@@ -34,6 +37,11 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('documents');
+        Schema::dropIfExists('folders');
+
+        Schema::table('documents', function (Blueprint $table) {
+            $table->dropForeign(['folder_id']);
+            $table->dropColumn('folder_id');
+        });
     }
 };

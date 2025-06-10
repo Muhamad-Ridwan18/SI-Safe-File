@@ -24,6 +24,7 @@
         <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/themes/bordered-layout.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/themes/semi-dark-layout.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/core/menu/menu-types/vertical-menu.css') }}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     </head>
     <body class="vertical-layout vertical-menu-modern  navbar-floating footer-static  " data-open="click" data-menu="vertical-menu-modern" data-col="">
         <nav class="header-navbar navbar navbar-expand-lg align-items-center floating-nav navbar-light navbar-shadow container-xxl">
@@ -107,14 +108,13 @@
                             <span class="menu-title text-truncate" data-i18n="Dashboard">Dashboard</span>
                         </a>
                     </li>
-
-                    {{-- Dokumen --}}
-                    <li class="nav-item {!! Request::is('documents*') ? ' active' : '' !!}">
-                        <a class="d-flex align-items-center" href="{{ route('documents.index') }}">
-                            <i data-feather="file-text"></i> {{-- Ganti dari shield ke file-text --}}
-                            <span class="menu-title text-truncate" data-i18n="Dokumen">Dokumen</span>
+                    <li class="nav-item {!! Request::is('folder*') ? ' active' : '' !!}">
+                        <a class="d-flex align-items-center" href="{{ route('folder.index') }}">
+                            <i data-feather="list"></i> {{-- Ganti dari square ke list --}}
+                            <span class="menu-title text-truncate" data-i18n="Kategori">Folder</span>
                         </a>
                     </li>
+                    {{-- Dokumen --}}
 
                     {{-- Kategori --}}
                     <li class="nav-item {!! Request::is('categories*') ? ' active' : '' !!}">
@@ -123,6 +123,7 @@
                             <span class="menu-title text-truncate" data-i18n="Kategori">Kategori</span>
                         </a>
                     </li>
+                    
                 </ul>
             </div>
 

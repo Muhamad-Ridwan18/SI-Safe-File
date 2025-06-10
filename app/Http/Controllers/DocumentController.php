@@ -30,9 +30,10 @@ class DocumentController extends Controller
      */
     public function index()
     {
+        $categories = Category::all();
         $documents = Document::with('category')->where('user_id', auth()->user()->id)->get();
         // dd($documents);
-        return view('documents.index', compact('documents'));
+        return view('documents.index', compact('documents', 'categories'));
     }
 
     public function show($id)
@@ -138,7 +139,7 @@ class DocumentController extends Controller
         if (!empty($secretKey)) {
             // dd('aaaaaaaa');
             $publicKeyPath = storage_path('app/public/public_key.pem');
-            $this->encryptPdf($filePath, $publicKeyPath, $originalFileName, $secretKey , $request->category_id);
+            $this->encryptPdf($filePath, $publicKeyPath, $originalFileName, $secretKey , $request->category_id, $request->folder_id);
         } else {
             // Simpan dokumen tanpa enkripsi
             Document::create([
@@ -149,14 +150,15 @@ class DocumentController extends Controller
                 'encryption_key' => null,
                 'iv' => null,
                 'secret_key' => null,
+                'folder_id' => $request->folder_id
             ]);
         }
 
-        return redirect()->route('documents.index');
+        return redirect()->back()->with('success', 'Document created successfully!');
     }
 
 
-    private function encryptPdf($filePath, $publicKeyPath, $originalFileName, $secretKey, $category_id)
+    private function encryptPdf($filePath, $publicKeyPath, $originalFileName, $secretKey, $category_id, $folder_id)
     {
         $pdfContent = Storage::disk('public')->get($filePath);
 
@@ -188,7 +190,8 @@ class DocumentController extends Controller
             'encryption_key' => base64_encode($encryptedKey),
             'iv' => base64_encode($iv),
             'secret_key' => $hashedSecretKey, 
-            'category_id' => $category_id
+            'category_id' => $category_id,
+            'folder_id' => $folder_id
         ]);
 
         return $encryptedFilePath;
@@ -256,25 +259,25 @@ class DocumentController extends Controller
     }
 
 
-    public function delete(Request $request)
+    public function destroy($id)
     {
-        $request->validate([
-            'id' => 'required|exists:documents,id'
+        $document = Document::findOrFail($id);
+
+        $filePathEncrypted = $document->encrypted_filename ?? null;
+        $filePathOriginal = $document->original_filename ? 'pdfs/' . $document->original_filename : null;
+        $decryptedFilePath = $document->original_filename ? 'decrypted_pdfs/' . $document->original_filename : null;
+
+        $pathsToDelete = array_filter([
+            $filePathEncrypted,
+            $filePathOriginal,
+            $decryptedFilePath
         ]);
 
-        $document = Document::findOrFail($request->id);
+        Storage::disk('public')->delete($pathsToDelete);
 
-        // Delete the files
-        $filePathEncrypted = $document->encrypted_filename;
-        $filePathOriginal = 'pdfs/' . $document->original_filename;
-        $decryptedFilePath = 'decrypted_pdfs/' . $document->original_filename;        
-
-        Storage::disk('public')->delete([$filePathEncrypted, $filePathOriginal, $decryptedFilePath]);
-
-        // Delete the document record from the database
         $document->delete();
 
-        return response()->json(['message' => 'Document deleted successfully']);
+        return redirect()->back()->with('success', 'File berhasil dihapus.');
     }
 
     
@@ -290,10 +293,45 @@ class DocumentController extends Controller
         return redirect()->back()->with('error', 'File not found.');
     }
 
-    public function export()
+    /**
+     * Export documents to Excel
+     */
+    public function export(Request $request)
     {
-        dd('export');
-        return Excel::download(new ExportReportDocument, 'documents.xlsx');
+        // dd($request->all());
+        $request->validate([
+            'user_id' => 'nullable|exists:users,id',
+            'category_id' => 'nullable|exists:categories,id',
+            'export_filename' => 'nullable|string|max:255',
+        ]);
+
+        $userId = $request->input('user_id');
+        $categoryId = $request->input('category_id');
+        
+        // Default export filename
+        $filename = $request->input('export_filename') ?? 'documents-export-' . date('Y-m-d') . '.xlsx';
+        
+        // Ensure filename has proper extension
+        if (!str_ends_with(strtolower($filename), '.xlsx')) {
+            $filename .= '.xlsx';
+        }
+
+        return Excel::download(
+            new ExportReportDocument($userId, $categoryId),
+            $filename
+        );
+    }
+
+    /**
+     * Quick export all documents without showing the form
+     */
+    public function exportAll()
+    {
+        dd('export all');
+        return Excel::download(
+            new ExportReportDocument(),
+            'all-documents-' . date('Y-m-d') . '.xlsx'
+        );
     }
 
 }

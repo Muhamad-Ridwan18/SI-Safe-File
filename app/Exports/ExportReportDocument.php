@@ -6,44 +6,82 @@ use App\Models\Document;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithStyles;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class ExportReportDocument implements FromCollection, WithHeadings, WithMapping
+class ExportReportDocument implements FromCollection, WithHeadings, WithMapping, ShouldAutoSize, WithStyles
 {
+    protected $userId = null;
+    protected $categoryId = null;
+
     /**
-     * Return the collection of documents.
+     * Optional constructor to filter by user_id or category_id
+     */
+    public function __construct($userId = null, $categoryId = null)
+    {
+        $this->userId = $userId;
+        $this->categoryId = $categoryId;
+    }
+
+    /**
+     * @return \Illuminate\Support\Collection
      */
     public function collection()
     {
-        return Document::with(['user', 'category'])->get();
+        $query = Document::query();
+        
+        // Apply filters if provided
+        if ($this->userId) {
+            $query->where('user_id', $this->userId);
+        }
+        
+        if ($this->categoryId) {
+            $query->where('category_id', $this->categoryId);
+        }
+        
+        return $query->with(['user', 'category'])->get();
     }
 
     /**
-     * Map the data for each document.
-     */
-    public function map($document): array
-    {
-        return [
-            $document->id,
-            $document->user->name ?? 'N/A', // Assuming user has a 'name' column
-            $document->original_filename,
-            $document->encrypted_filename,
-            $document->category->name ?? 'N/A', // Assuming category has a 'name' column
-            $document->created_at->format('Y-m-d H:i:s'),
-        ];
-    }
-
-    /**
-     * Define the headings for the Excel file.
+     * @return array
      */
     public function headings(): array
     {
         return [
             'ID',
-            'User',
             'Original Filename',
-            'Encrypted Filename',
             'Category',
+            'Owner',
             'Created At',
+            'Updated At',
+        ];
+    }
+
+    /**
+     * @param mixed $document
+     * @return array
+     */
+    public function map($document): array
+    {
+        return [
+            $document->id,
+            $document->original_filename,
+            $document->category ? $document->category->name : 'N/A',
+            $document->user ? $document->user->name : 'N/A',
+            $document->created_at->format('Y-m-d H:i:s'),
+            $document->updated_at->format('Y-m-d H:i:s'),
+        ];
+    }
+
+    /**
+     * @param Worksheet $sheet
+     */
+    public function styles(Worksheet $sheet)
+    {
+        return [
+            // Style the first row as bold
+            1 => ['font' => ['bold' => true]],
         ];
     }
 }

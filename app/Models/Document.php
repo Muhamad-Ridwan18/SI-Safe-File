@@ -17,7 +17,8 @@ class Document extends Model
         'encryption_key',
         'iv',
         'secret_key',
-        'category_id'
+        'category_id',
+        'folder_id',
     ];
 
     public function user()
@@ -28,6 +29,11 @@ class Document extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function folder()
+    {
+        return $this->belongsTo(Folder::class);
     }
 
 }
