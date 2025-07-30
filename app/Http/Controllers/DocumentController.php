@@ -257,6 +257,31 @@ class DocumentController extends Controller
     {
         $document = Document::findOrFail($id);
 
+        // Check if document is password protected
+        if ($document->secret_key) {
+            $password = request()->input('password');
+            
+            if (!$password) {
+                if (request()->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Password diperlukan untuk menghapus dokumen yang dilindungi.'
+                    ], 422);
+                }
+                return redirect()->back()->withErrors(['delete' => 'Password diperlukan untuk menghapus dokumen yang dilindungi.']);
+            }
+            
+            if (!Hash::check($password, $document->secret_key)) {
+                if (request()->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Password salah.'
+                    ], 422);
+                }
+                return redirect()->back()->withErrors(['delete' => 'Password salah.']);
+            }
+        }
+
         $filePathEncrypted = $document->encrypted_filename ?? null;
         $filePathOriginal = $document->original_filename ? 'pdfs/' . $document->original_filename : null;
         $decryptedFilePath = $document->original_filename ? 'decrypted_pdfs/' . $document->original_filename : null;
@@ -270,6 +295,14 @@ class DocumentController extends Controller
         Storage::disk('public')->delete($pathsToDelete);
 
         $document->delete();
+
+        // Check if request is AJAX
+        if (request()->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Dokumen berhasil dihapus!'
+            ]);
+        }
 
         return redirect()->back()->with('success', 'File berhasil dihapus.');
     }

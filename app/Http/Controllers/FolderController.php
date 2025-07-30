@@ -139,11 +139,49 @@ class FolderController extends Controller
         
         // Check if folder has children or documents
         if ($folder->children->count() > 0 || $folder->documents->count() > 0) {
+            if (request()->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Folder tidak dapat dihapus karena masih berisi subfolder atau dokumen.'
+                ], 422);
+            }
             return redirect()->back()->withErrors(['delete' => 'Folder tidak dapat dihapus karena masih berisi subfolder atau dokumen.']);
+        }
+        
+        if ($folder->password) {
+            $password = request()->input('password');
+            
+            if (!$password) {
+                if (request()->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Password diperlukan untuk menghapus folder yang dilindungi.'
+                    ], 422);
+                }
+                return redirect()->back()->withErrors(['delete' => 'Password diperlukan untuk menghapus folder yang dilindungi.']);
+            }
+            
+            if (!Hash::check($password, $folder->password)) {
+                if (request()->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Password salah.'
+                    ], 422);
+                }
+                return redirect()->back()->withErrors(['delete' => 'Password salah.']);
+            }
         }
         
         $parentId = $folder->parent_id;
         $folder->delete();
+        
+        // Check if request is AJAX
+        if (request()->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Folder berhasil dihapus!'
+            ]);
+        }
         
         // Redirect based on context
         if ($parentId) {

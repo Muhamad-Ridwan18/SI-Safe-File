@@ -38,7 +38,7 @@
                 <div class="mb-1 breadcrumb-right">
                     <div class="dropdown">
                         <button class="btn-icon btn btn-primary btn-round btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i data-feather="grid"></i>
+                            <i data-feather="edit"></i>
                         </button>
                         <div class="dropdown-menu dropdown-menu-end">
                             <a class="dropdown-item" href="{{ route('folder.edit', $folder->id) }}">
@@ -58,10 +58,20 @@
                         <div class="card">
                             <div class="card shadow-sm border-0 p-4">
                                 
-                                <!-- Search and Action Buttons Section -->
+                                <div class="d-flex flex-wrap gap-2 mb-3 justify-content-end action-buttons">
+                                    <button type="button" class="btn btn-success d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#createSubfolderModal">
+                                        <i class="fas fa-folder-plus"></i>
+                                        <span class="d-none d-md-inline">Buat Subfolder</span>
+                                    </button>
+                                    <button type="button" class="btn btn-primary d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#uploadDocumentModal">
+                                        <i class="fas fa-upload"></i>
+                                        <span class="d-none d-md-inline">Upload</span>
+                                    </button>
+                                </div>
+                                <!-- Search and Filter Section -->
                                 <div class="mb-4">
                                     <div class="row align-items-center">
-                                        <div class="col-md-6 mb-3 mb-md-0">
+                                        <div class="col-md-4 mb-3 mb-md-0">
                                             <div class="search-container position-relative">
                                                 <input type="text" id="globalSearch" class="form-control form-control-lg ps-5" 
                                                        placeholder="Cari subfolder atau dokumen..." autocomplete="off">
@@ -71,17 +81,24 @@
                                                 </button>
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="d-flex flex-wrap gap-2 justify-content-md-end">
-                                                <button type="button" class="btn btn-success d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#createSubfolderModal">
-                                                    <i class="fas fa-folder-plus"></i>
-                                                    <span>Buat Subfolder</span>
-                                                </button>
-                                                <button type="button" class="btn btn-primary d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#uploadDocumentModal">
-                                                    <i class="fas fa-upload"></i>
-                                                    <span>Upload Dokumen</span>
-                                                </button>
-                                            </div>
+                                        <div class="col-md-3 mb-3 mb-md-0">
+                                            <select id="categoryFilter" class="form-select form-select-lg">
+                                                <option value="">Semua Kategori</option>
+                                                @foreach ($categories as $category)
+                                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3 mb-3 mb-md-0">
+                                            <select id="typeFilter" class="form-select form-select-lg">
+                                                <option value="">Semua Tipe</option>
+                                                <option value="folder">Folder Saja</option>
+                                                <option value="document">Dokumen Saja</option>
+                                                {{-- <option value="protected">Terproteksi Saja</option> --}}
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2">
+                                            
                                         </div>
                                     </div>
                                     
@@ -116,149 +133,122 @@
                                     </div>
                                 @endif
 
-                                <!-- Subfolders Section -->
-                                @if ($folder->children->count() > 0)
-                                    <div class="mb-5" id="subfoldersSection">
-                                        <div class="d-flex align-items-center mb-4">
-                                            <h5 class="mb-0 me-3">
-                                                <i class="fas fa-folder me-2 text-warning"></i>Subfolder
-                                            </h5>
-                                            <span class="badge bg-light-warning text-warning rounded-pill" id="subfolderCount">
-                                                {{ $folder->children->count() }}
-                                            </span>
-                                        </div>
-                                        <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4" id="subfoldersGrid">
-                                            @foreach ($folder->children as $subfolder)
-                                                <div class="col folder-item" data-name="{{ strtolower($subfolder->name) }}" data-category="{{ strtolower($subfolder->category->name ?? '') }}">
-                                                    <div class="card h-100 folder-card border-0 shadow-sm position-relative">
-                                                        <!-- Dropdown Menu -->
-                                                        <div class="dropdown position-absolute folder-menu" style="top: 15px; right: 15px; z-index: 10;">
-                                                            <button class="btn btn-sm btn-light rounded-circle shadow-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                                <i class="fas fa-ellipsis-v"></i>
-                                                            </button>
-                                                            <ul class="dropdown-menu dropdown-menu-end shadow border-0">
-                                                                <li><a class="dropdown-item" href="{{ route('folder.edit', $subfolder->id) }}">
-                                                                    <i class="fas fa-edit me-2 text-primary"></i>Edit
-                                                                </a></li>
-                                                                <li><hr class="dropdown-divider"></li>
-                                                                <li><a class="dropdown-item text-danger delete-folder" href="#" data-id="{{ $subfolder->id }}">
-                                                                    <i class="fas fa-trash me-2"></i>Hapus
-                                                                </a></li>
-                                                            </ul>
-                                                        </div>
+                                <!-- Tombol aksi utama di atas list -->
+                                
 
-                                                        <a href="{{ route('folder.show', $subfolder->id) }}" class="text-decoration-none h-100">
-                                                            <div class="card-body text-center p-4 d-flex flex-column justify-content-center h-100">
-                                                                <div class="folder-icon mb-3">
-                                                                    <i class="fas fa-folder text-warning" style="font-size: 3rem;"></i>
-                                                                </div>
-                                                                <div class="d-flex justify-content-center align-items-center gap-2 flex-wrap">
-                                                                    <h6 class="card-title mb-0 text-dark fw-semibold text-truncate" style="max-width: 150px;">
-                                                                        {{ $subfolder->name }}
-                                                                    </h6>
-                                                                    @if ($subfolder->password)
-                                                                        <i class="fas fa-lock text-muted" data-bs-toggle="tooltip" title="Folder dilindungi password"></i>
-                                                                    @endif
-                                                                </div>
+                                <!-- List View -->
+                                <div class="list-group list-group-flush" id="contentList">
+                                    @foreach ($folder->children as $subfolder)
+                                        <div class="list-group-item content-item folder-item p-0 border-0 mb-2" 
+                                             data-name="{{ strtolower($subfolder->name) }}" 
+                                             data-category="{{ strtolower($subfolder->category->name ?? '') }}"
+                                             data-category-id="{{ $subfolder->category_id }}"
+                                             data-type="folder"
+                                             data-protected="{{ $subfolder->password ? 'false' : 'true' }}"
+                                             data-password="{{ $subfolder->password}}">
+                                            <div class="d-flex align-items-center p-3 bg-light rounded position-relative" style="z-index:1;">
+                                                <div class="flex-shrink-0 me-3">
+                                                    <i class="fas fa-folder text-warning fs-4"></i>
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <div class="d-flex align-items-center justify-content-between">
+                                                        <div>
+                                                            <h6 class="mb-1 fw-semibold">
+                                                                <a href="{{ route('folder.show', $subfolder->id) }}" class="text-decoration-none text-dark">
+                                                                    {{ $subfolder->name }}
+                                                                </a>
+                                                            </h6>
+                                                            <div class="d-flex align-items-center gap-3 text-muted small">
                                                                 @if($subfolder->category)
-                                                                    <small class="text-muted mt-2">{{ $subfolder->category->name }}</small>
+                                                                    <span><i class="fas fa-tag me-1"></i>{{ $subfolder->category->name }}</span>
+                                                                @endif
+                                                                <span><i class="fas fa-folder me-1"></i>{{ $subfolder->children->count() }} subfolder</span>
+                                                                <span><i class="fas fa-file me-1"></i>{{ $subfolder->documents->count() }} dokumen</span>
+                                                                @if ($subfolder->password)
+                                                                    <span class="text-warning"><i class="fas fa-lock me-1"></i>Terproteksi</span>
                                                                 @endif
                                                             </div>
-                                                        </a>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            @endforeach
+                                                <!-- Dropdown pindah ke root agar tidak terpotong -->
+                                                <div class="dropdown ms-2" style="position: absolute; top: 16px; right: 16px;">
+                                                    <button class="btn btn-sm btn-light rounded-circle shadow-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <i class="fas fa-ellipsis-v"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                                                        <li><a class="dropdown-item" href="{{ route('folder.edit', $subfolder->id) }}">
+                                                            <i class="fas fa-edit text-primary"></i>Edit
+                                                        </a></li>
+                                                        <li><hr class="dropdown-divider"></li>
+                                                        <li><a class="dropdown-item text-danger delete-folder" href="#" 
+                                                               data-id="{{ $subfolder->id }}" 
+                                                               data-name="{{ $subfolder->name }}"
+                                                               data-password="{{ $subfolder->password}}">
+                                                            <i class="fas fa-trash"></i>Hapus
+                                                        </a></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                @endif
-
-                                <!-- Documents Section -->
-                                <div id="documentsSection">
-                                    <div class="d-flex align-items-center mb-4">
-                                        <h5 class="mb-0 me-3">
-                                            <i class="fas fa-file-alt me-2 text-primary"></i>Dokumen
-                                        </h5>
-                                        <span class="badge bg-light-primary text-primary rounded-pill" id="documentCount">
-                                            {{ $folder->documents->count() }}
-                                        </span>
-                                    </div>
-                                    @if ($folder->documents->count() > 0)
-                                        <div class="table-responsive shadow-sm rounded">
-                                            <table class="table table-hover mb-0" id="documentsTable">
-                                                <thead class="table-light">
-                                                    <tr>
-                                                        <th class="border-0 fw-semibold">Nama File</th>
-                                                        <th class="border-0 fw-semibold">Kategori</th>
-                                                        <th class="border-0 fw-semibold">Tanggal Upload</th>
-                                                        <th class="border-0 fw-semibold">Aksi</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @foreach ($folder->documents as $document)
-                                                        <tr class="document-row" data-name="{{ strtolower($document->original_filename ?? $document->filename) }}" data-category="{{ strtolower($document->category->name ?? '') }}">
-                                                            <td>
-                                                                <div class="d-flex align-items-center">
-                                                                    <div class="file-icon me-3">
-                                                                        <i class="fas fa-file-alt text-primary fs-4"></i>
-                                                                    </div>
-                                                                    <div>
-                                                                        <div class="fw-medium text-dark">{{ $document->original_filename ?? $document->filename }}</div>
-                                                                        @if($document->secret_key)
-                                                                            <small class="text-muted">
-                                                                                <i class="fas fa-lock me-1"></i>Dokumen terproteksi
-                                                                            </small>
-                                                                        @endif
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-                                                            <td>
+                                    @endforeach
+                                    @foreach ($folder->documents as $document)
+                                        <div class="list-group-item content-item document-item p-0 border-0 mb-2" 
+                                             data-name="{{ strtolower($document->original_filename ?? $document->filename) }}" 
+                                             data-category="{{ strtolower($document->category->name ?? '') }}"
+                                             data-category-id="{{ $document->category_id }}"
+                                             data-type="document"
+                                             data-protected="{{ $document->secret_key ? 'true' : 'false' }}"
+                                             data-secret="{{ $document->secret_key}}">
+                                            <div class="d-flex align-items-center p-3 bg-light rounded position-relative" style="z-index:1;">
+                                                <div class="flex-shrink-0 me-3">
+                                                    <i class="fas fa-file-alt text-primary fs-4"></i>
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <div class="d-flex align-items-center justify-content-between">
+                                                        <div>
+                                                            <h6 class="mb-1 fw-semibold">{{ $document->original_filename ?? $document->filename }}</h6>
+                                                            <div class="d-flex align-items-center gap-3 text-muted small">
                                                                 @if($document->category)
-                                                                    <span class="badge bg-light-secondary text-secondary">
-                                                                        {{ $document->category->name }}
-                                                                    </span>
-                                                                @else
-                                                                    <span class="text-muted">-</span>
+                                                                    <span><i class="fas fa-tag me-1"></i>{{ $document->category->name }}</span>
                                                                 @endif
-                                                            </td>
-                                                            <td>
-                                                                <small class="text-muted">{{ $document->created_at->format('d M Y') }}</small>
-                                                            </td>
-                                                            <td>
-                                                                <div class="dropdown">
-                                                                    <button class="btn btn-sm btn-outline-primary dropdown-toggle border-0" type="button" data-bs-toggle="dropdown">
-                                                                        <i class="fas fa-cog me-1"></i>Aksi
-                                                                    </button>
-                                                                    <ul class="dropdown-menu shadow border-0">
-                                                                        @if ($document->secret_key)
-                                                                            <li>
-                                                                                <a href="#" class="dropdown-item unlock-btn" data-id="{{ $document->id }}">
-                                                                                    <i class="fas fa-lock me-2"></i>Unlock & Download
-                                                                                </a>
-                                                                            </li>
-                                                                        @else    
-                                                                            <li><a class="dropdown-item" href="{{ route('documents.download', $document->id) }}">
-                                                                                <i class="fas fa-download me-2 text-success"></i>Download
-                                                                            </a></li>
-                                                                        @endif
-                                                                        <li><hr class="dropdown-divider"></li>
-                                                                        <li><a class="dropdown-item text-danger delete-document" href="#" data-id="{{ $document->id }}">
-                                                                            <i class="fas fa-trash me-2"></i>Hapus
-                                                                        </a></li>
-                                                                    </ul>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    @endforeach
-                                                </tbody>
-                                            </table>
+                                                                <span><i class="fas fa-calendar me-1"></i>{{ $document->created_at->format('d M Y') }}</span>
+                                                                @if($document->secret_key)
+                                                                    <span class="text-warning"><i class="fas fa-lock me-1"></i>Terproteksi</span>
+                                                                @endif
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- Dropdown pindah ke root agar tidak terpotong -->
+                                                <div class="dropdown ms-2" style="position: absolute; top: 16px; right: 16px;">
+                                                    <button class="btn btn-sm btn-light rounded-circle shadow-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <i class="fas fa-ellipsis-v"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                                                        @if ($document->secret_key)
+                                                            <li>
+                                                                <a href="#" class="dropdown-item unlock-btn" data-id="{{ $document->id }}" data-name="{{ $document->original_filename ?? $document->filename }}">
+                                                                    <i class="fas fa-lock text-warning"></i>Unlock & Download
+                                                                </a>
+                                                            </li>
+                                                        @else    
+                                                            <li><a class="dropdown-item" href="{{ route('documents.download', $document->id) }}">
+                                                                <i class="fas fa-download text-success"></i>Download
+                                                            </a></li>
+                                                        @endif
+                                                        <li><hr class="dropdown-divider"></li>
+                                                        <li><a class="dropdown-item text-danger delete-document" href="#" 
+                                                               data-id="{{ $document->id }}" 
+                                                               data-name="{{ $document->original_filename ?? $document->filename }}"
+                                                               data-secret="{{ $document->secret_key}}">
+                                                            <i class="fas fa-trash"></i>Hapus
+                                                        </a></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
                                         </div>
-                                    @else
-                                        <div class="alert alert-light text-center py-5 border-0 bg-light">
-                                            <i class="fas fa-file-alt text-muted fa-3x mb-3"></i>
-                                            <h6 class="text-muted">Belum ada dokumen dalam folder ini.</h6>
-                                            <p class="text-muted mb-0">Klik tombol "Upload Dokumen" untuk menambahkan dokumen pertama Anda.</p>
-                                        </div>
-                                    @endif
+                                    @endforeach
                                 </div>
 
                                 <!-- No Results Found -->
@@ -267,6 +257,25 @@
                                     <h6 class="text-muted">Tidak ditemukan hasil untuk pencarian "<span id="searchTerm"></span>"</h6>
                                     <p class="text-muted mb-0">Coba gunakan kata kunci yang berbeda atau periksa ejaan Anda.</p>
                                 </div>
+
+                                <!-- Empty State -->
+                                @if ($folder->children->count() == 0 && $folder->documents->count() == 0)
+                                    <div id="emptyState" class="text-center py-5">
+                                        <i class="fas fa-folder-open text-muted fa-3x mb-3"></i>
+                                        <h6 class="text-muted">Folder ini masih kosong</h6>
+                                        <p class="text-muted mb-4">Mulai dengan membuat subfolder atau mengupload dokumen pertama Anda.</p>
+                                        <div class="d-flex justify-content-center gap-3">
+                                            <button type="button" class="btn btn-success d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#createSubfolderModal">
+                                                <i class="fas fa-folder-plus"></i>
+                                                <span>Buat Subfolder</span>
+                                            </button>
+                                            <button type="button" class="btn btn-primary d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#uploadDocumentModal">
+                                                <i class="fas fa-upload"></i>
+                                                <span>Upload Dokumen</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                @endif
 
                             </div>
                         </div>
@@ -278,29 +287,77 @@
 </div>
 <!-- END: Content-->
 
+<!-- Unlock Document Modal -->
 <div class="modal fade" id="unlockModal" tabindex="-1" aria-labelledby="unlockModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <form method="POST" action="{{ route('documents.decrypt') }}" id="unlockForm">
-        @csrf
-        <input type="hidden" name="document_id" id="modal-document-id">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="unlockModalLabel"><i class="fas fa-lock me-2"></i>Masukkan Password</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
-          </div>
-          <div class="modal-body">
-              <div class="mb-3">
-                  <label for="secret_key" class="form-label">Password Dokumen</label>
-                  <input type="password" name="secret_key" class="form-control" id="secret_key" required>
-              </div>
-          </div>
-          <div class="modal-footer">
-            <button type="submit" class="btn btn-primary">Unlock & Download</button>
-          </div>
-        </div>
-    </form>
-  </div>
+    <div class="modal-dialog">
+        <form method="POST" action="{{ route('documents.decrypt') }}" id="unlockForm">
+            @csrf
+            <input type="hidden" name="document_id" id="modal-document-id">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="unlockModalLabel">
+                        <i class="fas fa-lock me-2"></i>Masukkan Password
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="secret_key" class="form-label">Password Dokumen</label>
+                        <input type="password" name="secret_key" class="form-control" id="secret_key" required>
+                        <div class="form-text">Masukkan password untuk membuka dan mengunduh dokumen.</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-unlock me-2"></i>Unlock & Download
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
+
+<!-- Delete Protected Item Modal -->
+<div class="modal fade" id="deleteProtectedModal" tabindex="-1" aria-labelledby="deleteProtectedModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteProtectedModalLabel">
+                    <i class="fas fa-shield-alt me-2 text-warning"></i>Konfirmasi Penghapusan
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-warning border-0 bg-light-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Item ini dilindungi password!</strong> Untuk menghapus item ini, Anda harus memasukkan password terlebih dahulu.
+                </div>
+                <div id="deleteError" class="text-danger small mb-2" style="display:none"></div>
+                <div class="mb-3">
+                    <label for="deletePassword" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="deletePassword" placeholder="Masukkan password untuk konfirmasi">
+                    <div class="form-text">Password ini diperlukan untuk keamanan penghapusan item terproteksi.</div>
+                </div>
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="confirmDelete">
+                        <label class="form-check-label" for="confirmDelete">
+                            Saya yakin ingin menghapus item ini secara permanen
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn" disabled>
+                    <i class="fas fa-trash me-2"></i>Hapus Permanen
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Create Subfolder Modal -->
 <div class="modal fade" id="createSubfolderModal" tabindex="-1" aria-labelledby="createSubfolderModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -334,6 +391,7 @@
                     <div class="mb-4">
                         <label for="subfolderPassword" class="form-label fw-semibold">Password (opsional)</label>
                         <input id="subfolderPassword" class="form-control form-control-lg" type="password" name="password" placeholder="Bisa dikosongkan">
+                        <div class="form-text">Password akan melindungi akses ke folder ini.</div>
                     </div>
 
                     <button type="submit" class="btn btn-success btn-lg w-100">
@@ -375,13 +433,14 @@
                             @endforeach
                         </select>
                         @if ($errors->has('category_id'))
-                                <span class="help-block text-danger">{{ $errors->first('category_id') }}</span>
+                            <span class="help-block text-danger">{{ $errors->first('category_id') }}</span>
                         @endif
                     </div>
 
                     <div class="mb-4">
                         <label for="documentPassword" class="form-label fw-semibold">Password (opsional)</label>
-                        {{ Form::text('secret_key', null, ['class' => 'form-control form-control-lg', 'placeholder' => 'Password (Optional)', 'id' => 'documentPassword']) }}
+                        <input type="text" name="secret_key" class="form-control form-control-lg" placeholder="Password (Optional)" id="documentPassword">
+                        <div class="form-text">Password akan mengenkripsi dokumen untuk keamanan tambahan.</div>
                     </div>
 
                     <button type="submit" class="btn btn-primary btn-lg w-100">
@@ -419,42 +478,23 @@
     justify-content: center;
 }
 
-.folder-card {
+.content-card {
     transition: all 0.3s ease;
     border: 1px solid #e3e6f0 !important;
 }
 
-.folder-card:hover {
+.content-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
 }
 
-.folder-card .folder-menu {
+.content-card .content-menu {
     opacity: 0;
     transition: opacity 0.3s ease;
 }
 
-.folder-card:hover .folder-menu {
+.content-card:hover .content-menu {
     opacity: 1;
-}
-
-.document-row {
-    transition: all 0.2s ease;
-}
-
-.document-row:hover {
-    background-color: #f8f9fa;
-    transform: translateX(5px);
-}
-
-.file-icon {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #e7f3ff;
-    border-radius: 8px;
 }
 
 .bg-light-primary { background-color: #e7f3ff !important; }
@@ -463,18 +503,6 @@
 .bg-light-warning { background-color: #fff3cd !important; }
 .bg-light-info { background-color: #e3f2fd !important; }
 .bg-light-secondary { background-color: #f8f9fa !important; }
-
-.table th {
-    background-color: #f8f9fa;
-    font-weight: 600;
-    color: #495057;
-    padding: 15px;
-}
-
-.table td {
-    padding: 15px;
-    vertical-align: middle;
-}
 
 .modal-content {
     border-radius: 15px;
@@ -549,6 +577,145 @@
     background-color: #f8f9fa;
     transform: translateX(5px);
 }
+
+/* List View Styling */
+.list-group-item {
+    border: none !important;
+    margin-bottom: 0.5rem;
+    border-radius: 10px !important;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+}
+
+.list-group-item .bg-light {
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.list-group-item .dropdown {
+    position: relative;
+    z-index: 2;
+}
+
+.list-group-item .dropdown-menu {
+    z-index: 2000 !important;
+    min-width: 160px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    border-radius: 10px;
+    position: absolute;
+    top: 100%;
+    left: auto;
+    right: 0;
+    will-change: top, left;
+}
+
+.dropdown.show .dropdown-menu {
+    display: block;
+}
+
+.dropdown-toggle:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.list-group-item .dropdown-toggle {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.list-group-item .dropdown-menu.show {
+    display: block;
+}
+
+.list-group-item .dropdown-item {
+    cursor: pointer;
+}
+
+.list-group-item .dropdown-item:active,
+.list-group-item .dropdown-item:focus {
+    background-color: #f8f9fa;
+    color: #212529;
+}
+
+.list-group-item .dropdown-divider {
+    margin: 0.25rem 0;
+}
+
+.list-group-item .d-flex {
+    align-items: center;
+    gap: 1rem;
+}
+
+.list-group-item .flex-grow-1 {
+    min-width: 0;
+}
+
+.list-group-item .action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.list-group-item .action-buttons .btn {
+    min-width: 36px;
+    padding: 0.375rem 0.75rem;
+}
+
+.list-group-item .action-buttons .btn i {
+    margin-right: 0;
+}
+
+.list-group-item .dropdown-menu .dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.list-group-item .dropdown-menu .dropdown-item i {
+    margin-right: 0.5rem;
+}
+
+.list-group-item .dropdown-menu .dropdown-divider {
+    margin: 0.25rem 0;
+}
+
+.list-group-item .dropdown-menu {
+    overflow: visible !important;
+}
+
+.list-group-item .dropdown-menu .dropdown-item {
+    white-space: nowrap;
+}
+
+.list-group-item .dropdown-menu .dropdown-item:active {
+    background-color: #f8f9fa;
+    color: #212529;
+}
+
+.list-group-item .dropdown-menu .dropdown-item:focus {
+    background-color: #f8f9fa;
+    color: #212529;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .list-group-item .d-flex {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 0.5rem;
+    }
+    .dropdown {
+        align-self: flex-end;
+        margin-top: 0.5rem;
+    }
+    .list-group-item .flex-grow-1 {
+        width: 100%;
+    }
+    .list-group-item .action-buttons {
+        gap: 0.25rem;
+    }
+}
 </style>
 
 <script>
@@ -560,6 +727,10 @@ $(document).ready(function() {
     const searchResultText = $('#searchResultText');
     const noResults = $('#noResults');
     const searchTerm = $('#searchTerm');
+    const categoryFilter = $('#categoryFilter');
+    const typeFilter = $('#typeFilter');
+    const contentList = $('#contentList');
+    const emptyState = $('#emptyState');
     
     // Global Search Functionality
     searchInput.on('input', function() {
@@ -582,99 +753,113 @@ $(document).ready(function() {
         }
     });
     
+    // Category Filter
+    categoryFilter.on('change', function() {
+        performSearch(searchInput.val().toLowerCase().trim());
+    });
+    
+    // Type Filter
+    typeFilter.on('change', function() {
+        performSearch(searchInput.val().toLowerCase().trim());
+    });
+    
     // Clear search
     clearButton.on('click', function() {
         searchInput.val('').trigger('input').focus();
+        categoryFilter.val('');
+        typeFilter.val('');
     });
     
     // Show all results
     $('#showAll').on('click', function() {
         searchInput.val('').trigger('input');
+        categoryFilter.val('');
+        typeFilter.val('');
     });
     
     function performSearch(query) {
-        if (query === '') {
-            showAllItems();
-            return;
-        }
+        const selectedCategory = categoryFilter.val();
+        const selectedType = typeFilter.val();
         
-        let folderResults = 0;
-        let documentResults = 0;
+        let visibleItems = 0;
         
-        // Search in subfolders
-        $('.folder-item').each(function() {
-            const folderName = $(this).data('name');
-            const folderCategory = $(this).data('category');
+        $('.content-item').each(function() {
+            const item = $(this);
+            const itemName = item.data('name');
+            const itemCategory = item.data('category');
+            const itemCategoryId = item.data('category-id');
+            const itemType = item.data('type');
+            const itemProtected = item.data('protected');
             
-            if (folderName.includes(query) || folderCategory.includes(query)) {
-                $(this).show().addClass('search-result');
-                folderResults++;
-                highlightText($(this), query);
+            let shouldShow = true;
+            
+            // Text search
+            if (query && !itemName.includes(query) && !itemCategory.includes(query)) {
+                shouldShow = false;
+            }
+            
+            // Category filter
+            if (selectedCategory && itemCategoryId != selectedCategory) {
+                shouldShow = false;
+            }
+            
+            // Type filter
+            if (selectedType) {
+                if (selectedType === 'folder' && itemType !== 'folder') {
+                    shouldShow = false;
+                } else if (selectedType === 'document' && itemType !== 'document') {
+                    shouldShow = false;
+                } else if (selectedType === 'protected' && itemProtected !== 'true') {
+                    shouldShow = false;
+                }
+            }
+            
+            if (shouldShow) {
+                item.show().addClass('search-result');
+                visibleItems++;
+                if (query) {
+                    highlightText(item, query);
+                }
             } else {
-                $(this).hide().removeClass('search-result');
+                item.hide().removeClass('search-result');
             }
         });
         
-        // Search in documents
-        $('.document-row').each(function() {
-            const documentName = $(this).data('name');
-            const documentCategory = $(this).data('category');
-            
-            if (documentName.includes(query) || documentCategory.includes(query)) {
-                $(this).show().addClass('search-result');
-                documentResults++;
-                highlightText($(this), query);
-            } else {
-                $(this).hide().removeClass('search-result');
-            }
-        });
-        
-        // Update counters
-        updateSearchResults(folderResults, documentResults, query);
+        // Update UI based on results
+        updateSearchResults(visibleItems, query, selectedCategory, selectedType);
     }
     
-    function showAllItems() {
-        $('.folder-item, .document-row').show().removeClass('search-result');
-        $('.search-highlight').contents().unwrap();
-        searchResults.addClass('d-none');
-        noResults.addClass('d-none');
-        updateCounters();
-    }
-    
-    function updateSearchResults(folderResults, documentResults, query) {
-        const totalResults = folderResults + documentResults;
+    function updateSearchResults(visibleItems, query, category, type) {
+        const hasFilters = query || category || type;
         
-        if (totalResults === 0) {
+        if (visibleItems === 0 && hasFilters) {
             searchResults.addClass('d-none');
             noResults.removeClass('d-none');
-            searchTerm.text(query);
+            searchTerm.text(query || 'filter yang dipilih');
+            contentList.hide();
+            emptyState.hide();
+        } else if (visibleItems === 0 && !hasFilters) {
+            searchResults.addClass('d-none');
+            noResults.addClass('d-none');
+            contentList.hide();
+            emptyState.show();
         } else {
             noResults.addClass('d-none');
-            searchResults.removeClass('d-none');
+            emptyState.hide();
+            contentList.show();
             
-            let resultText = `Ditemukan ${totalResults} hasil untuk "${query}"`;
-            if (folderResults > 0 && documentResults > 0) {
-                resultText += ` (${folderResults} subfolder, ${documentResults} dokumen)`;
-            } else if (folderResults > 0) {
-                resultText += ` (${folderResults} subfolder)`;
+            if (hasFilters) {
+                searchResults.removeClass('d-none');
+                
+                let resultText = `Ditemukan ${visibleItems} hasil`;
+                if (query) resultText += ` untuk "${query}"`;
+                if (category) resultText += ` dalam kategori yang dipilih`;
+                if (type) resultText += ` dengan tipe yang dipilih`;
+                
+                searchResultText.text(resultText);
             } else {
-                resultText += ` (${documentResults} dokumen)`;
+                searchResults.addClass('d-none');
             }
-            
-            searchResultText.text(resultText);
-        }
-        
-        // Update section visibility
-        if (folderResults === 0) {
-            $('#subfoldersSection').hide();
-        } else {
-            $('#subfoldersSection').show();
-        }
-        
-        if (documentResults === 0) {
-            $('#documentsSection').hide();
-        } else {
-            $('#documentsSection').show();
         }
     }
     
@@ -699,160 +884,335 @@ $(document).ready(function() {
         return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
     
-    function updateCounters() {
-        const visibleFolders = $('.folder-item:visible').length;
-        const visibleDocuments = $('.document-row:visible').length;
-        
-        $('#subfolderCount').text(visibleFolders);
-        $('#documentCount').text(visibleDocuments);
-    }
-    
     // Handle folder deletion
     $('.delete-folder').click(function(e) {
         e.preventDefault();
         var id = $(this).data('id');
-        var folderName = $(this).closest('.folder-card').find('.card-title').text().trim();
+        var name = $(this).data('name');
+        var hasPassword = $(this).data('password');
+        console.log(hasPassword, name, id);
         
-        swal({
-            title: 'Apakah Anda yakin?',
-            text: `Subfolder "${folderName}" akan dihapus permanen!`,
-            type: 'warning',
-            buttons: {
-                confirm: {
-                    text: 'Ya, Hapus!',
-                    className: 'btn btn-danger'
-                },
-                cancel: {
-                    visible: true,
-                    text: 'Batal',
-                    className: 'btn btn-secondary'
-                }
-            }
-        }).then((Delete) => {
-            if (Delete) {
-                // Show loading state
-                $(this).html('<i class="fas fa-spinner fa-spin me-2"></i>Menghapus...');
-                
-                $.ajax({
-                    url: `{{ url('folder') }}/` + id,
-                    method: 'DELETE',
-                    data: {
-                        "_token": "{{ csrf_token() }}"
+        if (hasPassword) {
+            $('#deleteProtectedModal').modal('show');
+            $('#deleteProtectedModal').data('item-id', id);
+            $('#deleteProtectedModal').data('item-name', name);
+            $('#deleteProtectedModal').data('item-type', 'folder');
+            $('#deletePassword').val('');
+            $('#confirmDelete').prop('checked', false);
+            $('#confirmDeleteBtn').prop('disabled', true);
+        } else {
+            // Regular deletion for unprotected folders
+            swal({
+                title: 'Apakah Anda yakin?',
+                text: `Subfolder "${name}" akan dihapus permanen!`,
+                type: 'warning',
+                buttons: {
+                    confirm: {
+                        text: 'Ya, Hapus!',
+                        className: 'btn btn-danger'
                     },
-                    success: function(data) {
-                        swal("Berhasil!", "Subfolder berhasil dihapus!", {
-                            icon: "success",
-                            buttons: {
-                                confirm: {
-                                    className: 'btn btn-success'
-                                }
-                            },
-                        }).then(() => {
-                            // Animate removal
-                            $(`[data-id="${id}"]`).closest('.col').fadeOut(400, function() {
-                                $(this).remove();
-                                updateCounters();
-                            });
-                        });
-                    },
-                    error: function(xhr) {
-                        var errorMessage = 'Terjadi kesalahan saat menghapus subfolder.';
-                        if (xhr.responseJSON && xhr.responseJSON.message) {
-                            errorMessage = xhr.responseJSON.message;
-                        }
-                        swal("Error!", errorMessage, {
-                            icon: "error",
-                            buttons: {
-                                confirm: {
-                                    className: 'btn btn-danger'
-                                }
-                            },
-                        });
+                    cancel: {
+                        visible: true,
+                        text: 'Batal',
+                        className: 'btn btn-secondary'
                     }
-                });
-            }
-        });
+                }
+            }).then((Delete) => {
+                if (Delete) {
+                    deleteFolder(id, name);
+                }
+            });
+        }
     });
 
     // Handle document deletion
     $('.delete-document').click(function(e) {
         e.preventDefault();
         var id = $(this).data('id');
-        var documentName = $(this).closest('tr').find('td:first .fw-medium').text().trim();
+        var name = $(this).data('name');
+        var hasSecret = $(this).data('secret');
         
-        swal({
-            title: 'Apakah Anda yakin?',
-            text: `Dokumen "${documentName}" akan dihapus permanen!`,
-            type: 'warning',
-            buttons: {
-                confirm: {
-                    text: 'Ya, Hapus!',
-                    className: 'btn btn-danger'
-                },
-                cancel: {
-                    visible: true,
-                    text: 'Batal',
-                    className: 'btn btn-secondary'
-                }
-            }
-        }).then((Delete) => {
-            if (Delete) {
-                // Show loading state
-                $(this).html('<i class="fas fa-spinner fa-spin me-2"></i>Menghapus...');
-                
-                $.ajax({
-                    url: `{{ url('documents') }}/` + id,
-                    method: 'DELETE',
-                    data: {
-                        "_token": "{{ csrf_token() }}"
+        if (hasSecret) {
+            $('#deleteProtectedModal').modal('show');
+            $('#deleteProtectedModal').data('item-id', id);
+            $('#deleteProtectedModal').data('item-name', name);
+            $('#deleteProtectedModal').data('item-type', 'document');
+            $('#deletePassword').val('');
+            $('#confirmDelete').prop('checked', false);
+            $('#confirmDeleteBtn').prop('disabled', true);
+        } else {
+            // Regular deletion for unprotected documents
+            swal({
+                title: 'Apakah Anda yakin?',
+                text: `Dokumen "${name}" akan dihapus permanen!`,
+                type: 'warning',
+                buttons: {
+                    confirm: {
+                        text: 'Ya, Hapus!',
+                        className: 'btn btn-danger'
                     },
-                    success: function(data) {
-                        swal("Berhasil!", "Dokumen berhasil dihapus!", {
-                            icon: "success",
-                            buttons: {
-                                confirm: {
-                                    className: 'btn btn-success'
-                                }
-                            },
-                        }).then(() => {
-                            // Animate removal
-                            $(`[data-id="${id}"]`).closest('tr').fadeOut(400, function() {
-                                $(this).remove();
-                                updateCounters();
-                                
-                                // Check if table is empty
-                                if ($('#documentsTable tbody tr:visible').length === 0) {
-                                    $('#documentsTable').closest('.table-responsive').fadeOut(400, function() {
-                                        $(this).replaceWith(`
-                                            <div class="alert alert-light text-center py-5 border-0 bg-light">
-                                                <i class="fas fa-file-alt text-muted fa-3x mb-3"></i>
-                                                <h6 class="text-muted">Belum ada dokumen dalam folder ini.</h6>
-                                                <p class="text-muted mb-0">Klik tombol "Upload Dokumen" untuk menambahkan dokumen pertama Anda.</p>
-                                            </div>
-                                        `);
-                                    });
-                                }
-                            });
-                        });
-                    },
-                    error: function(xhr) {
-                        var errorMessage = 'Terjadi kesalahan saat menghapus dokumen.';
-                        if (xhr.responseJSON && xhr.responseJSON.message) {
-                            errorMessage = xhr.responseJSON.message;
-                        }
-                        swal("Error!", errorMessage, {
-                            icon: "error",
-                            buttons: {
-                                confirm: {
-                                    className: 'btn btn-danger'
-                                }
-                            },
-                        });
+                    cancel: {
+                        visible: true,
+                        text: 'Batal',
+                        className: 'btn btn-secondary'
                     }
+                }
+            }).then((Delete) => {
+                if (Delete) {
+                    deleteDocument(id, name);
+                }
+            });
+        }
+    });
+
+    // Handle unlock document
+    $('.unlock-btn').click(function(e) {
+        e.preventDefault();
+        const documentId = this.getAttribute('data-id');
+        const documentName = this.getAttribute('data-name');
+        document.getElementById('modal-document-id').value = documentId;
+        
+        // Update modal title with document name
+        $('#unlockModalLabel').html(`<i class="fas fa-lock me-2"></i>Masukkan Password - ${documentName}`);
+        
+        var modal = new bootstrap.Modal(document.getElementById('unlockModal'));
+        modal.show();
+    });
+
+    function checkEmptyState() {
+        if ($('.content-item:visible').length === 0) {
+            contentList.hide();
+            emptyState.show();
+        }
+    }
+    
+    // Helper functions for deletion
+    function deleteFolder(id, name) {
+        $.ajax({
+            url: `{{ url('folder') }}/` + id,
+            method: 'DELETE',
+            data: {
+                "_token": "{{ csrf_token() }}"
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    swal("Berhasil!", response.message, {
+                        icon: "success",
+                        buttons: {
+                            confirm: {
+                                className: 'btn btn-success'
+                            }
+                        },
+                    }).then(() => {
+                        // Animate removal
+                        $(`[data-id="${id}"]`).closest('.list-group-item').fadeOut(400, function() {
+                            $(this).remove();
+                            checkEmptyState();
+                        });
+                    });
+                } else {
+                    swal("Error!", response.message, {
+                        icon: "error",
+                        buttons: {
+                            confirm: {
+                                className: 'btn btn-danger'
+                            }
+                        },
+                    });
+                }
+            },
+            error: function(xhr) {
+                var errorMessage = 'Terjadi kesalahan saat menghapus subfolder.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                }
+                swal("Error!", errorMessage, {
+                    icon: "error",
+                    buttons: {
+                        confirm: {
+                            className: 'btn btn-danger'
+                        }
+                    },
                 });
             }
         });
+    }
+    
+    function deleteDocument(id, name) {
+        $.ajax({
+            url: `{{ url('documents') }}/` + id,
+            method: 'DELETE',
+            data: {
+                "_token": "{{ csrf_token() }}"
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    swal("Berhasil!", response.message, {
+                        icon: "success",
+                        buttons: {
+                            confirm: {
+                                className: 'btn btn-success'
+                            }
+                        },
+                    }).then(() => {
+                        // Animate removal
+                        $(`[data-id="${id}"]`).closest('.list-group-item').fadeOut(400, function() {
+                            $(this).remove();
+                            checkEmptyState();
+                        });
+                    });
+                } else {
+                    swal("Error!", response.message, {
+                        icon: "error",
+                        buttons: {
+                            confirm: {
+                                className: 'btn btn-danger'
+                            }
+                        },
+                    });
+                }
+            },
+            error: function(xhr) {
+                var errorMessage = 'Terjadi kesalahan saat menghapus dokumen.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                }
+                swal("Error!", errorMessage, {
+                    icon: "error",
+                    buttons: {
+                        confirm: {
+                            className: 'btn btn-danger'
+                        }
+                    },
+                });
+            }
+        });
+    }
+    
+    // Protected item deletion modal handlers
+    $('#deleteProtectedModal').on('show.bs.modal', function() {
+        $('#deleteError').hide().text('');
+        $('#deletePassword').val('');
+        $('#confirmDelete').prop('checked', false);
+        $('#confirmDeleteBtn').prop('disabled', true);
     });
+
+    $('#deletePassword').on('input', function() {
+        var password = $(this).val();
+        var isChecked = $('#confirmDelete').is(':checked');
+        $('#confirmDeleteBtn').prop('disabled', password.length === 0 || !isChecked);
+        $('#deleteError').hide().text('');
+    });
+
+    $('#confirmDelete').on('change', function() {
+        var password = $('#deletePassword').val();
+        var isChecked = $(this).is(':checked');
+        $('#confirmDeleteBtn').prop('disabled', password.length === 0 || !isChecked);
+        $('#deleteError').hide().text('');
+    });
+
+    $('#confirmDeleteBtn').off('click').on('click', function() {
+        var itemId = $('#deleteProtectedModal').data('item-id');
+        var itemName = $('#deleteProtectedModal').data('item-name');
+        var itemType = $('#deleteProtectedModal').data('item-type');
+        var password = $('#deletePassword').val();
+        var $btn = $(this);
+        $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Memproses...');
+        $('#deleteError').hide().text('');
+        if (itemType === 'folder') {
+            deleteProtectedFolder(itemId, itemName, password, $btn);
+        } else if (itemType === 'document') {
+            deleteProtectedDocument(itemId, itemName, password, $btn);
+        }
+    });
+    
+    function deleteProtectedFolder(id, name, password, $btn) {
+        $.ajax({
+            url: `{{ url('folder') }}/` + id,
+            method: 'DELETE',
+            data: {
+                "_token": "{{ csrf_token() }}",
+                "password": password
+            },
+            dataType: 'json',
+            success: function(response) {
+                $('#deleteProtectedModal').modal('hide');
+                $btn.prop('disabled', false).html('<i class="fas fa-trash me-2"></i>Hapus Permanen');
+                if (response.success) {
+                    swal("Berhasil!", response.message, {
+                        icon: "success",
+                        buttons: {
+                            confirm: {
+                                className: 'btn btn-success'
+                            }
+                        },
+                    }).then(() => {
+                        $(`[data-id="${id}"]`).closest('.list-group-item').fadeOut(400, function() {
+                            $(this).remove();
+                            checkEmptyState();
+                        });
+                    });
+                } else {
+                    // Show error in modal
+                    $('#deleteProtectedModal').modal('show');
+                    $('#deleteError').show().text(response.message || 'Password salah atau terjadi kesalahan.');
+                }
+            },
+            error: function(xhr) {
+                $btn.prop('disabled', false).html('<i class="fas fa-trash me-2"></i>Hapus Permanen');
+                var errorMessage = 'Password salah atau terjadi kesalahan.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                }
+                $('#deleteError').show().text(errorMessage);
+            }
+        });
+    }
+    
+    function deleteProtectedDocument(id, name, password, $btn) {
+        $.ajax({
+            url: `{{ url('documents') }}/` + id,
+            method: 'DELETE',
+            data: {
+                "_token": "{{ csrf_token() }}",
+                "password": password
+            },
+            dataType: 'json',
+            success: function(response) {
+                $('#deleteProtectedModal').modal('hide');
+                $btn.prop('disabled', false).html('<i class="fas fa-trash me-2"></i>Hapus Permanen');
+                if (response.success) {
+                    swal("Berhasil!", response.message, {
+                        icon: "success",
+                        buttons: {
+                            confirm: {
+                                className: 'btn btn-success'
+                            }
+                        },
+                    }).then(() => {
+                        $(`[data-id="${id}"]`).closest('.list-group-item').fadeOut(400, function() {
+                            $(this).remove();
+                            checkEmptyState();
+                        });
+                    });
+                } else {
+                    // Show error in modal
+                    $('#deleteProtectedModal').modal('show');
+                    $('#deleteError').show().text(response.message || 'Password salah atau terjadi kesalahan.');
+                }
+            },
+            error: function(xhr) {
+                $btn.prop('disabled', false).html('<i class="fas fa-trash me-2"></i>Hapus Permanen');
+                var errorMessage = 'Password salah atau terjadi kesalahan.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                }
+                $('#deleteError').show().text(errorMessage);
+            }
+        });
+    }
 
     // Initialize tooltips
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
@@ -895,7 +1255,7 @@ $(document).ready(function() {
     searchInput.attr('placeholder', 'Cari subfolder atau dokumen... (Ctrl+K)');
     
     // Auto-focus search on page load if there are many items
-    const totalItems = $('.folder-item').length + $('.document-row').length;
+    const totalItems = $('.content-item').length;
     if (totalItems > 10) {
         setTimeout(() => {
             if (!searchInput.is(':focus')) {
@@ -911,7 +1271,7 @@ $(document).ready(function() {
         }, 300);
     });
     
-    // Enhanced drag and drop for file upload (if needed in future)
+    // Enhanced drag and drop for file upload
     const uploadModal = $('#uploadDocumentModal');
     const fileInput = $('#document');
     
@@ -936,9 +1296,6 @@ $(document).ready(function() {
         }
     });
     
-    // Initialize counters on page load
-    updateCounters();
-    
     // Add success animation for alerts
     $('.alert-success').each(function() {
         $(this).hide().fadeIn(500);
@@ -947,19 +1304,23 @@ $(document).ready(function() {
         }, 5000);
     });
 });
-</script>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        document.querySelectorAll('.unlock-btn').forEach(function (btn) {
-            btn.addEventListener('click', function (e) {
-                e.preventDefault();
-                const documentId = this.getAttribute('data-id');
-                document.getElementById('modal-document-id').value = documentId;
-                var modal = new bootstrap.Modal(document.getElementById('unlockModal'));
-                modal.show();
-            });
-        });
-    });
+// Dropdown menu fix: position fixed saat open agar tidak tertutup
+$(document).on('show.bs.dropdown', '.dropdown', function () {
+    var $menu = $(this).find('.dropdown-menu');
+    var offset = $menu.offset();
+    var height = $menu.outerHeight();
+    var winHeight = $(window).height();
+    // Jika dropdown akan keluar dari viewport bawah, geser ke atas
+    if (offset && offset.top + height > winHeight) {
+        $menu.css({ top: 'auto', bottom: '100%' });
+    } else {
+        $menu.css({ top: '', bottom: '' });
+    }
+    $menu.css('z-index', 2000);
+});
+$(document).on('hide.bs.dropdown', '.dropdown', function () {
+    $(this).find('.dropdown-menu').css({ top: '', bottom: '' });
+});
 </script>
 @endpush
