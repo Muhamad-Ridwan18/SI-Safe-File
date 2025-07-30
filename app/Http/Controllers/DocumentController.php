@@ -137,11 +137,9 @@ class DocumentController extends Controller
         $secretKey = $request->input('secret_key');
 
         if (!empty($secretKey)) {
-            // dd('aaaaaaaa');
             $publicKeyPath = storage_path('app/public/public_key.pem');
             $this->encryptPdf($filePath, $publicKeyPath, $originalFileName, $secretKey , $request->category_id, $request->folder_id);
         } else {
-            // Simpan dokumen tanpa enkripsi
             Document::create([
                 'category_id' => $request->category_id,
                 'user_id' => auth()->user()->id,
@@ -213,21 +211,17 @@ class DocumentController extends Controller
         ]);
 
         $document = Document::findOrFail($request->document_id);
-        $providedSecretKey = $request->secret_key;
 
-        // Verify the secret key
-        if (!Hash::check($providedSecretKey, $document->secret_key)) {
-            return response()->json(['message' => 'Invalid secret key'], 403);
+        if (!Hash::check($request->secret_key, $document->secret_key)) {
+            return back()->withErrors(['secret_key' => 'Password salah.']);
         }
 
-        // Proceed with decryption
+        // Decrypt the file
         $privateKeyPath = storage_path('app/public/private_key.pem');
         $encryptedFilePath = $document->encrypted_filename;
         $decryptedFilePath = $this->decryptPdf($encryptedFilePath, $privateKeyPath);
 
-        $fileUrl = asset('storage/' . $decryptedFilePath);
-
-        return response()->json(['fileUrl' => $fileUrl]);
+        return response()->download(storage_path("app/public/" . $decryptedFilePath), $document->original_filename);
     }
 
     private function decryptPdf($encryptedFilePath, $privateKeyPath)
