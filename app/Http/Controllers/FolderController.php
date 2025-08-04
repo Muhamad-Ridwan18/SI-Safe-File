@@ -13,7 +13,13 @@ class FolderController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Folder::whereNull('parent_id');
+        $user = auth()->user();
+        $query = Folder::whereNull('parent_id')
+            ->where(function($q) use ($user) {
+                $q->where('user_id', $user->id)
+                  ->orWhere('user_id', '5d759032-37d7-4f6b-b5d2-110b4b521a10');
+            });
+
         if ($request->has('category_id') && $request->category_id != '') {
             $query->where('category_id', $request->category_id);
         }

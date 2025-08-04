@@ -84,23 +84,37 @@
                                                 <div class="col">
                                                     <div class="card h-100 folder-card border shadow-sm hover-shadow position-relative">
                                                         <!-- Dropdown Menu -->
-                                                        <div class="dropdown position-absolute" style="top: 10px; right: 10px; z-index: 10;">
+                                                        @if ($folder->user_id !== '5d759032-37d7-4f6b-b5d2-110b4b521a10')
+                                                        <div class="dropdown position-absolute" style="top: 10px; right: 10px; z-index: 20;">
                                                             <button class="btn btn-sm btn-light rounded-circle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                                                 <i class="fas fa-ellipsis-v"></i>
                                                             </button>
                                                             <ul class="dropdown-menu dropdown-menu-end">
-                                                                <li><a class="dropdown-item" href="{{ route('folder.edit', $folder->id) }}">
-                                                                    <i class="fas fa-edit me-2"></i>Edit
-                                                                </a></li>
+                                                                <li>
+                                                                    <a class="dropdown-item" href="{{ route('folder.edit', $folder->id) }}">
+                                                                        <i class="fas fa-edit me-2"></i>Edit
+                                                                    </a>
+                                                                </li>
                                                                 <li><hr class="dropdown-divider"></li>
-                                                                <li><a class="dropdown-item text-danger delete-folder" href="#" data-id="{{ $folder->id }}">
-                                                                    <i class="fas fa-trash me-2"></i>Hapus
-                                                                </a></li>
+                                                                <li>
+                                                                    <a class="dropdown-item text-danger delete-folder" href="#" 
+                                                                        data-id="{{ $folder->id }}" 
+                                                                        data-name="{{ $folder->name }}"
+                                                                        data-password="{{ $folder->password}}">
+                                                                        <i class="fas fa-trash"></i>Hapus
+                                                                    </a>
+                                                                </li>
                                                             </ul>
                                                         </div>
+                                                        @endif
 
                                                         <a href="{{ route('folder.show', $folder->id) }}" class="text-decoration-none">
-                                                            <div class="card-body text-center p-4">
+                                                            <div class="card-body text-center p-4 position-relative">
+                                                                @if($folder->category_id)
+                                                                    <span class="badge bg-primary position-absolute" style="top: 10px; left: 10px; z-index: 15;">
+                                                                        {{ $folder->category->name }}
+                                                                    </span>
+                                                                @endif
                                                                 <div class="folder-icon mb-3">
                                                                     <i class="fas fa-folder text-warning" style="font-size: 3rem;"></i>
                                                                 </div>
@@ -112,9 +126,6 @@
                                                                         <i class="fas fa-lock text-secondary" data-bs-toggle="tooltip" title="Folder dilindungi password"></i>
                                                                     @endif
                                                                 </div>
-                                                                @if($folder->category)
-                                                                    <small class="text-muted">{{ $folder->category->name }}</small>
-                                                                @endif
                                                             </div>
                                                         </a>
                                                     </div>
@@ -215,6 +226,47 @@
         </div>
     </div>
 </div>
+
+<!-- Delete Protected Item Modal -->
+<div class="modal fade" id="deleteProtectedModal" tabindex="-1" aria-labelledby="deleteProtectedModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteProtectedModalLabel">
+                    <i class="fas fa-shield-alt me-2 text-warning"></i>Konfirmasi Penghapusan
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-warning border-0 bg-light-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Item ini dilindungi password!</strong> Untuk menghapus item ini, Anda harus memasukkan password terlebih dahulu.
+                </div>
+                <div id="deleteError" class="text-danger small mb-2" style="display:none"></div>
+                <div class="mb-3">
+                    <label for="deletePassword" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="deletePassword" placeholder="Masukkan password untuk konfirmasi">
+                    <div class="form-text">Password ini diperlukan untuk keamanan penghapusan item terproteksi.</div>
+                </div>
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="confirmDelete">
+                        <label class="form-check-label" for="confirmDelete">
+                            Saya yakin ingin menghapus item ini secara permanen
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn" disabled>
+                    <i class="fas fa-trash me-2"></i>Hapus Permanen
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @push('scripts')
@@ -228,108 +280,180 @@
 
             // Handle folder deletion
             $('.delete-folder').click(function(e) {
-                e.preventDefault();
                 var id = $(this).data('id');
-                var folderName = $(this).closest('.folder-card').find('.card-title').text().trim();
+                var name = $(this).data('name');
+                var hasPassword = $(this).data('password');
+                console.log(hasPassword, name, id);
                 
-                swal({
-                    title: 'Apakah Anda yakin?',
-                    text: `Folder "${folderName}" akan dihapus permanen!`,
-                    type: 'warning',
-                    buttons: {
-                        confirm: {
-                            text: 'Ya, Hapus!',
-                            className: 'btn btn-danger'
-                        },
-                        cancel: {
-                            visible: true,
-                            text: 'Batal',
-                            className: 'btn btn-secondary'
-                        }
-                    }
-                }).then((Delete) => {
-                    if (Delete) {
-                        $.ajax({
-                            url: `{{ url('folder') }}/` + id,
-                            method: 'DELETE',
-                            data: {
-                                "_token": "{{ csrf_token() }}"
+                if (hasPassword) {
+                    $('#deleteProtectedModal').modal('show');
+                    $('#deleteProtectedModal').data('item-id', id);
+                    $('#deleteProtectedModal').data('item-name', name);
+                    $('#deleteProtectedModal').data('item-type', 'folder');
+                    $('#deletePassword').val('');
+                    $('#confirmDelete').prop('checked', false);
+                    $('#confirmDeleteBtn').prop('disabled', true);
+                } else {
+                    swal({
+                        title: 'Apakah Anda yakin?',
+                        text: `Subfolder "${name}" akan dihapus permanen!`,
+                        type: 'warning',
+                        buttons: {
+                            confirm: {
+                                text: 'Ya, Hapus!',
+                                className: 'btn btn-danger'
                             },
-                            success: function(data) {
-                                swal("Berhasil!", "Folder berhasil dihapus!", {
-                                    icon: "success",
-                                    buttons: {
-                                        confirm: {
-                                            className: 'btn btn-success'
-                                        }
-                                    },
-                                });
-                                location.reload();
-                            },
-                            error: function(xhr) {
-                                var errorMessage = 'Terjadi kesalahan saat menghapus folder.';
-                                if (xhr.responseJSON && xhr.responseJSON.message) {
-                                    errorMessage = xhr.responseJSON.message;
-                                }
-                                swal("Error!", errorMessage, {
-                                    icon: "error",
-                                    buttons: {
-                                        confirm: {
-                                            className: 'btn btn-danger'
-                                        }
-                                    },
-                                });
+                            cancel: {
+                                visible: true,
+                                text: 'Batal',
+                                className: 'btn btn-secondary'
                             }
-                        });
-                    } else {
-                        swal.close();
-                    }
-                });
+                        }
+                    }).then((Delete) => {
+                        if (Delete) {
+                            deleteFolder(id, name);
+                            swal("Berhasil!", "Subfolder berhasil dihapus!", {
+                                icon: "success",
+                                buttons: {
+                                    confirm: {
+                                        className: 'btn btn-success'
+                                    }
+                                },
+                            });
+                            location.reload();
+                        }
+                    });
+                }
             });
 
-            $('.delete').click(function(e) {
-                var id = $(this).data('id');
-                swal({
-                    title: 'Are you sure?',
-                    text: "Data will be permanently deleted!",
-                    type: 'warning',
-                    buttons: {
-                        confirm: {
-                            text: 'Yes, I am sure!',
-                            className: 'btn btn-success'
-                        },
-                        cancel: {
-                            visible: true,
-                            className: 'btn btn-danger'
-                        }
-                    }
-                }).then((Delete) => {
-                    if (Delete) {
-                        $.ajax({
-                            url: `{{ url('documents') }}/` + id,
-                            method: 'post',
-                            cache: false,
-                            data: {
-                                "_token": "{{ csrf_token() }}",
-                                "id": id
-                            },
-                            success: function(data) {
-                                swal("Good job!", "You clicked the button!", {
-                                    icon: "success",
-                                    buttons: {
-                                        confirm: {
-                                            className: 'btn btn-success'
-                                        }
-                                    },
+            $('#deleteProtectedModal').on('show.bs.modal', function() {
+                $('#deleteError').hide().text('');
+                $('#deletePassword').val('');
+                $('#confirmDelete').prop('checked', false);
+                $('#confirmDeleteBtn').prop('disabled', true);
+            });
+
+            $('#deletePassword').on('input', function() {
+                var password = $(this).val();
+                var isChecked = $('#confirmDelete').is(':checked');
+                $('#confirmDeleteBtn').prop('disabled', password.length === 0 || !isChecked);
+                $('#deleteError').hide().text('');
+            });
+
+            $('#confirmDelete').on('change', function() {
+                var password = $('#deletePassword').val();
+                var isChecked = $(this).is(':checked');
+                $('#confirmDeleteBtn').prop('disabled', password.length === 0 || !isChecked);
+                $('#deleteError').hide().text('');
+            });
+
+            $('#confirmDeleteBtn').off('click').on('click', function() {
+                var itemId = $('#deleteProtectedModal').data('item-id');
+                var itemName = $('#deleteProtectedModal').data('item-name');
+                var itemType = $('#deleteProtectedModal').data('item-type');
+                var password = $('#deletePassword').val();
+                var $btn = $(this);
+                $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Memproses...');
+                $('#deleteError').hide().text('');
+                if (itemType === 'folder') {
+                    deleteProtectedFolder(itemId, itemName, password, $btn);
+                } else if (itemType === 'document') {
+                    deleteProtectedDocument(itemId, itemName, password, $btn);
+                }
+            });
+            function deleteFolder(id, name) {
+                $.ajax({
+                    url: `{{ url('folder') }}/` + id,
+                    method: 'DELETE',
+                    data: {
+                        "_token": "{{ csrf_token() }}"
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            swal("Berhasil!", response.message, {
+                                icon: "success",
+                                buttons: {
+                                    confirm: {
+                                        className: 'btn btn-success'
+                                    }
+                                },
+                            }).then(() => {
+                                // Animate removal
+                                $(`[data-id="${id}"]`).closest('.list-group-item').fadeOut(400, function() {
+                                    $(this).remove();
+                                    checkEmptyState();
                                 });
-                                location.reload();
-                            }
+                            });
+                        } else {
+                            swal("Error!", response.message, {
+                                icon: "error",
+                                buttons: {
+                                    confirm: {
+                                        className: 'btn btn-danger'
+                                    }
+                                },
+                            });
+                        }
+                    },
+                    error: function(xhr) {
+                        var errorMessage = 'Terjadi kesalahan saat menghapus subfolder.';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+                        swal("Error!", errorMessage, {
+                            icon: "error",
+                            buttons: {
+                                confirm: {
+                                    className: 'btn btn-danger'
+                                }
+                            },
                         });
-                    } else {
-                        swal.close();
                     }
                 });
-            });
+            }
+            
+            function deleteProtectedFolder(id, name, password, $btn) {
+                $.ajax({
+                    url: `{{ url('folder') }}/` + id,
+                    method: 'DELETE',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        "password": password
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        $('#deleteProtectedModal').modal('hide');
+                        $btn.prop('disabled', false).html('<i class="fas fa-trash me-2"></i>Hapus Permanen');
+                        if (response.success) {
+                            swal("Berhasil!", response.message, {
+                                icon: "success",
+                                buttons: {
+                                    confirm: {
+                                        className: 'btn btn-success'
+                                    }
+                                },
+                            }).then(() => {
+                                $(`[data-id="${id}"]`).closest('.list-group-item').fadeOut(400, function() {
+                                    $(this).remove();
+                                    location.reload();
+                                });
+                            });
+                        } else {
+                            $('#deleteProtectedModal').modal('show');
+                            $('#deleteError').show().text(response.message || 'Password salah atau terjadi kesalahan.');
+                        }
+                    },
+                    error: function(xhr) {
+                        $btn.prop('disabled', false).html('<i class="fas fa-trash me-2"></i>Hapus Permanen');
+                        var errorMessage = 'Password salah atau terjadi kesalahan.';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+                        $('#deleteError').show().text(errorMessage);
+                    }
+                });
+            }
 
         });
     </script>

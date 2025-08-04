@@ -102,30 +102,30 @@
             <div class="main-menu-content">
                 <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
                     {{-- Dashboard --}}
-                    <li class="nav-item {!! Request::is('/') ? ' active' : '' !!}">
+                    <li class="nav-item{!! Request::is('/') ? ' active' : '' !!}">
                         <a class="d-flex align-items-center" href="/">
-                            <i data-feather="home"></i> {{-- Ganti dari square ke home --}}
+                            <i data-feather="grid"></i> {{-- Icon dashboard: grid --}}
                             <span class="menu-title text-truncate" data-i18n="Dashboard">Dashboard</span>
                         </a>
                     </li>
-                    <li class="nav-item {!! Request::is('folder*') ? ' active' : '' !!}">
+                    <li class="nav-item{!! Request::is('folder*') ? ' active' : '' !!}">
                         <a class="d-flex align-items-center" href="{{ route('folder.index') }}">
-                            <i data-feather="list"></i> {{-- Ganti dari square ke list --}}
-                            <span class="menu-title text-truncate" data-i18n="Kategori">Folder</span>
+                            <i data-feather="folder"></i> {{-- Icon folder --}}
+                            <span class="menu-title text-truncate" data-i18n="Folder">Folder</span>
                         </a>
                     </li>
                     {{-- Kategori --}}
                     @if (Auth::user()->role == 'Admin')
-                    <li class="nav-item {!! Request::is('categories*') ? ' active' : '' !!}">
+                    <li class="nav-item{!! Request::is('categories*') ? ' active' : '' !!}">
                         <a class="d-flex align-items-center" href="{{ route('categories.index') }}">
-                            <i data-feather="list"></i> {{-- Ganti dari square ke list --}}
+                            <i data-feather="tag"></i> {{-- Icon kategori: tag --}}
                             <span class="menu-title text-truncate" data-i18n="Kategori">Kategori</span>
                         </a>
                     </li>
-                    <li class="nav-item {!! Request::is('user*') ? ' active' : '' !!}">
+                    <li class="nav-item{!! Request::is('user*') ? ' active' : '' !!}">
                         <a class="d-flex align-items-center" href="{{ route('user.index') }}">
-                            <i data-feather="users"></i> {{-- Ganti dari square ke list --}}
-                            <span class="menu-title text-truncate" data-i18n="Kategori">Users</span>
+                            <i data-feather="user"></i> {{-- Icon user --}}
+                            <span class="menu-title text-truncate" data-i18n="Users">Users</span>
                         </a>
                     </li>
                     @endif
@@ -136,8 +136,8 @@
         <div class="drag-target"></div>
         <footer class="footer footer-static footer-light">
             <p class="clearfix mb-0">
-                <span class="float-md-start d-block d-md-inline-block mt-25">COPYRIGHT &copy; 2021 <a class="ms-25" href="https://1.envato.market/pixinvent_portfolio" target="_blank">Pixinvent</a>
-                    <span class="d-none d-sm-inline-block">, All rights Reserved</span>
+                <span class="float-md-start d-block d-md-inline-block mt-25">COPYRIGHT &copy; 2025 <a class="ms-25" href="https://1.envato.market/pixinvent_portfolio" target="_blank">MR18</a>
+                    <span class="d-none d-sm-inline-block">, Politeknik TEDC </span>
                 </span>
                 <span class="float-md-end d-none d-md-block">Hand-crafted & Made with <i data-feather="heart"></i>
                 </span>

@@ -35,58 +35,85 @@ class HomeController extends Controller
 
     public function dashboard() 
     {
-        // Existing data
-        $documents = Document::with(['user', 'category', 'folder'])->latest()->take(10)->get();
-        $totalDocuments = Document::count();
-        $totalCategories = Category::count();
-        $totalFolders = Folder::count();
-        $totalUsers = User::count();
-        
-        // Additional data for enhanced dashboard
-        $documentsByCategory = Document::select('category_id')
-            ->with('category')
+        $user = Auth::user();
+        $isAdmin = $user->role == 'Admin';
+
+        // Query builder for user scoping
+        $documentQuery = Document::with(['user', 'category', 'folder']);
+        $documentByCategoryQuery = Document::select('category_id')->with('category');
+        $documentByUserQuery = Document::select('user_id')->with('user');
+        $recentActivityQuery = Document::with(['user', 'category']);
+        $monthlyUploads = [];
+
+        if (!$isAdmin) {
+            $documentQuery->where('user_id', $user->id);
+            $documentByCategoryQuery->where('user_id', $user->id);
+            $documentByUserQuery->where('user_id', $user->id);
+            $recentActivityQuery->where('user_id', $user->id);
+        }
+
+        $documents = $documentQuery->latest()->take(10)->get();
+        $totalDocuments = $isAdmin ? Document::count() : Document::where('user_id', $user->id)->count();
+        $totalCategories = $isAdmin ? Category::count() : Category::whereHas('documents', function($q) use ($user) {
+            $q->where('user_id', $user->id);
+        })->count();
+        $totalFolders = $isAdmin ? Folder::count() : Folder::whereHas('documents', function($q) use ($user) {
+            $q->where('user_id', $user->id);
+        })->count();
+        $totalUsers = $isAdmin ? User::count() : 1;
+
+        $documentsByCategory = $documentByCategoryQuery
             ->get()
             ->groupBy('category.name')
             ->map(function ($group) {
                 return $group->count();
             });
-        
-        $documentsByUser = Document::select('user_id')
-            ->with('user')
+
+        $documentsByUser = $documentByUserQuery
             ->get()
             ->groupBy('user.name')
             ->map(function ($group) {
                 return $group->count();
             });
-        
-        $recentActivity = Document::with(['user', 'category'])
+
+        $recentActivity = $recentActivityQuery
             ->latest()
             ->take(8)
             ->get();
-        
-        $topCategories = Category::withCount('documents')
+
+        $topCategories = Category::withCount(['documents' => function($q) use ($isAdmin, $user) {
+                if (!$isAdmin) {
+                    $q->where('user_id', $user->id);
+                }
+            }])
             ->orderBy('documents_count', 'desc')
             ->take(5)
             ->get();
-        
-        $activeUsers = User::withCount('documents')
+
+        $activeUsers = User::withCount(['documents' => function($q) use ($isAdmin, $user) {
+                if (!$isAdmin) {
+                    $q->where('user_id', $user->id);
+                }
+            }])
             ->orderBy('documents_count', 'desc')
             ->take(5)
             ->get();
-        
+
         // Monthly upload statistics (last 6 months)
-        $monthlyUploads = [];
         for ($i = 5; $i >= 0; $i--) {
             $date = now()->subMonths($i);
-            $count = Document::whereYear('created_at', $date->year)
-                            ->whereMonth('created_at', $date->month)
-                            ->count();
+            $monthlyCountQuery = Document::whereYear('created_at', $date->year)
+                                         ->whereMonth('created_at', $date->month);
+            if (!$isAdmin) {
+                $monthlyCountQuery->where('user_id', $user->id);
+            }
+            $count = $monthlyCountQuery->count();
             $monthlyUploads[] = [
                 'month' => $date->format('M Y'),
                 'count' => $count
             ];
         }
-        
+
         return view('welcome', compact(
             'documents',
             'totalDocuments', 

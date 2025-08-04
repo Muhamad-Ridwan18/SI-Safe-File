@@ -57,80 +57,69 @@
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card shadow-sm border-0 p-4">
-                                
-                                <div class="d-flex flex-wrap gap-2 mb-3 justify-content-end action-buttons">
-                                    <button type="button" class="btn btn-success d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#createSubfolderModal">
-                                        <i class="fas fa-folder-plus"></i>
-                                        <span class="d-none d-md-inline">Buat Subfolder</span>
-                                    </button>
-                                    <button type="button" class="btn btn-primary d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#uploadDocumentModal">
-                                        <i class="fas fa-upload"></i>
-                                        <span class="d-none d-md-inline">Upload</span>
-                                    </button>
-                                </div>
-                                <!-- Search and Filter Section -->
-                                <div class="mb-4">
-                                    <div class="row align-items-center">
-                                        <div class="col-md-4 mb-3 mb-md-0">
-                                            <div class="search-container position-relative">
-                                                <input type="text" id="globalSearch" class="form-control form-control-lg ps-5" 
-                                                       placeholder="Cari subfolder atau dokumen..." autocomplete="off">
-                                                <i class="fas fa-search position-absolute search-icon"></i>
-                                                <button type="button" id="clearSearch" class="btn btn-sm btn-light position-absolute clear-search d-none">
-                                                    <i class="fas fa-times"></i>
-                                                </button>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-4">
+                                            <div class="row align-items-center">
+                                                <div class="col-md-4 mb-3 mb-md-0">
+                                                    <div class="search-container position-relative">
+                                                        <input type="text" id="globalSearch" class="form-control form-control-lg ps-5" 
+                                                               placeholder="Cari subfolder atau dokumen..." autocomplete="off">
+                                                        <i class="fas fa-search position-absolute search-icon"></i>
+                                                        <button type="button" id="clearSearch" class="btn btn-sm btn-light position-absolute clear-search d-none">
+                                                            <i class="fas fa-times"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 mb-3 mb-md-0">
+                                                    <select id="categoryFilter" class="form-select form-select-lg">
+                                                        <option value="">Semua Kategori</option>
+                                                        @foreach ($categories as $category)
+                                                            <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-4 mb-3 mb-md-0">
+                                                    <select id="typeFilter" class="form-select form-select-lg">
+                                                        <option value="">Semua Tipe</option>
+                                                        <option value="folder">Folder Saja</option>
+                                                        <option value="document">Dokumen Saja</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Search Results Counter -->
+                                            <div id="searchResults" class="mt-3 d-none">
+                                                <div class="alert alert-info border-0 bg-light-info">
+                                                    <i class="fas fa-info-circle me-2"></i>
+                                                    <span id="searchResultText"></span>
+                                                    <button type="button" class="btn btn-sm btn-outline-info ms-2" id="showAll">
+                                                        Tampilkan Semua
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-3 mb-3 mb-md-0">
-                                            <select id="categoryFilter" class="form-select form-select-lg">
-                                                <option value="">Semua Kategori</option>
-                                                @foreach ($categories as $category)
-                                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                        <div class="col-md-3 mb-3 mb-md-0">
-                                            <select id="typeFilter" class="form-select form-select-lg">
-                                                <option value="">Semua Tipe</option>
-                                                <option value="folder">Folder Saja</option>
-                                                <option value="document">Dokumen Saja</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-2">
-                                            
-                                        </div>
                                     </div>
-                                    
-                                    <!-- Search Results Counter -->
-                                    <div id="searchResults" class="mt-3 d-none">
-                                        <div class="alert alert-info border-0 bg-light-info">
-                                            <i class="fas fa-info-circle me-2"></i>
-                                            <span id="searchResultText"></span>
-                                            <button type="button" class="btn btn-sm btn-outline-info ms-2" id="showAll">
-                                                Tampilkan Semua
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-wrap gap-2 mb-3 justify-content-end action-buttons">
+                                            <button type="button" class="btn btn-success d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#createSubfolderModal">
+                                                <i class="fas fa-folder-plus"></i>
+                                                <span class="d-none d-md-inline">Buat Subfolder</span>
+                                            </button>
+                                            <button type="button" class="btn btn-primary d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#uploadDocumentModal">
+                                                <i class="fas fa-upload"></i>
+                                                <span class="d-none d-md-inline">Upload</span>
                                             </button>
                                         </div>
                                     </div>
+                                    
                                 </div>
+                                <!-- Search and Filter Section -->
 
-                                @if (session('success'))
-                                    <div class="alert alert-success alert-dismissible fade show border-0 bg-light-success" role="alert">
-                                        <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
-                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                    </div>
-                                @endif
-
-                                @if ($errors->any())
-                                    <div class="alert alert-danger alert-dismissible fade show border-0 bg-light-danger" role="alert">
-                                        <h6 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>Error!</h6>
-                                        <ul class="mb-0">
-                                            @foreach ($errors->all() as $error)
-                                                <li>{{ $error }}</li>
-                                            @endforeach
-                                        </ul>
-                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                    </div>
-                                @endif
+                                
 
                                 <!-- Tombol aksi utama di atas list -->
                                 
@@ -458,6 +447,7 @@
 @endsection
 
 @push('scripts')
+
 <style>
 /* Enhanced Styling */
 .search-container .search-icon {
@@ -720,7 +710,29 @@
     }
 }
 </style>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        @if (session('success'))
+            swal({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: '{{ session('success') }}',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK'
+            });
+        @endif
 
+        @if ($errors->any())
+            swal({
+                icon: 'error',
+                title: 'Terjadi Kesalahan!',
+                html: `{!! implode('<br>', $errors->all()) !!}`,
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'OK'
+            });
+        @endif
+    });
+</script>
 <script>
 $(document).ready(function() {
     let searchTimeout;
@@ -1152,10 +1164,8 @@ $(document).ready(function() {
                             }
                         },
                     }).then(() => {
-                        $(`[data-id="${id}"]`).closest('.list-group-item').fadeOut(400, function() {
-                            $(this).remove();
-                            checkEmptyState();
-                        });
+                        // Langsung reload halaman setelah sukses
+                        location.reload();
                     });
                 } else {
                     // Show error in modal
@@ -1195,10 +1205,7 @@ $(document).ready(function() {
                             }
                         },
                     }).then(() => {
-                        $(`[data-id="${id}"]`).closest('.list-group-item').fadeOut(400, function() {
-                            $(this).remove();
-                            checkEmptyState();
-                        });
+                        location.reload();
                     });
                 } else {
                     // Show error in modal

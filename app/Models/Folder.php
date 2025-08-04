@@ -11,7 +11,7 @@ class Folder extends Model
     use HasFactory;
     use HasUuids;
 
-    protected $fillable = ['name', 'parent_id', 'password', 'user_id'];
+    protected $fillable = ['name', 'parent_id', 'password', 'user_id', 'category_id'];
 
     public function parent()
     {
@@ -26,5 +26,10 @@ class Folder extends Model
     public function documents()
     {
         return $this->hasMany(Document::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
     }
 }

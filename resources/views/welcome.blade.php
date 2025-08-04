@@ -16,7 +16,7 @@
                                     <div>
                                         <h3 class="text-white mb-1">Selamat datang kembali, <b>{{ Auth::user()->name }}</b>!
                                             👋</h3>
-                                        <p class="text-white-75 mb-0">Berikut adalah ringkasan aktivitas dokumen Anda hari
+                                        <p class="text-white-75 mb-0">Berikut adalah ringkasan aktivitas disekolah hari
                                             ini.</p>
                                     </div>
                                     <div class="welcome-icon">
@@ -28,7 +28,7 @@
                     </div>
 
                     <!-- Enhanced Summary Cards -->
-                    <div class="col-xl-3 col-md-6 col-12">
+                    <div class="{{ Auth::user()->role == 'Admin' ? 'col-xl-3' : 'col-xl-4' }} col-md-6 col-12">
                         <div class="card stats-card h-100 shadow-sm border-0"
                             style="border-left: 4px solid #28c76f !important;">
                             <div class="card-body">
@@ -50,7 +50,7 @@
                         </div>
                     </div>
 
-                    <div class="col-xl-3 col-md-6 col-12">
+                    <div class="{{ Auth::user()->role == 'Admin' ? 'col-xl-3' : 'col-xl-4' }} col-md-6 col-12">
                         <div class="card stats-card h-100 shadow-sm border-0"
                             style="border-left: 4px solid #7367f0 !important;">
                             <div class="card-body">
@@ -71,7 +71,7 @@
                         </div>
                     </div>
 
-                    <div class="col-xl-3 col-md-6 col-12">
+                    <div class="{{ Auth::user()->role == 'Admin' ? 'col-xl-3' : 'col-xl-4' }} col-md-6 col-12">
                         <div class="card stats-card h-100 shadow-sm border-0"
                             style="border-left: 4px solid #ff9f43 !important;">
                             <div class="card-body">
@@ -92,27 +92,28 @@
                             </div>
                         </div>
                     </div>
-
-                    <div class="col-xl-3 col-md-6 col-12">
-                        <div class="card stats-card h-100 shadow-sm border-0"
-                            style="border-left: 4px solid #ea5455 !important;">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="text-muted mb-1">Total Pengguna</h6>
-                                        <h2 class="fw-bolder mb-0 counter" data-target="{{ $totalUsers }}">0</h2>
-                                        <small class="text-danger">
-                                            <i data-feather="users" class="me-1" style="width: 14px; height: 14px;"></i>
-                                            Terdaftar
-                                        </small>
-                                    </div>
-                                    <div class="stats-icon">
-                                        <i data-feather="user-check" style="width: 32px; height: 32px; color: #ea5455;"></i>
+                    @if (Auth::user()->role == 'Admin')    
+                        <div class="{{ Auth::user()->role == 'Admin' ? 'col-xl-3' : 'col-xl-4' }} col-md-6 col-12">
+                            <div class="card stats-card h-100 shadow-sm border-0"
+                                style="border-left: 4px solid #ea5455 !important;">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="text-muted mb-1">Total Pengguna</h6>
+                                            <h2 class="fw-bolder mb-0 counter" data-target="{{ $totalUsers }}">0</h2>
+                                            <small class="text-danger">
+                                                <i data-feather="users" class="me-1" style="width: 14px; height: 14px;"></i>
+                                                Terdaftar
+                                            </small>
+                                        </div>
+                                        <div class="stats-icon">
+                                            <i data-feather="user-check" style="width: 32px; height: 32px; color: #ea5455;"></i>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    @endif
 
                     <!-- Charts Section -->
                     <div class="col-lg-12 col-12 mt-3">
@@ -121,119 +122,13 @@
                                 <h4 class="card-title mb-0">Statistik Upload (6 Bulan Terakhir)</h4>
                             </div>
                             <div class="card-body">
-                                <canvas id="monthlyChart" height="100"></canvas>
+                                <canvas id="monthlyChart" height="200"></canvas>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="col-lg-6 col-12 mt-3">
-                        <div class="card shadow-sm">
-                            <div class="card-header d-flex justify-content-between align-items-center">
-                                <h4 class="card-title mb-0">Aktivitas Terbaru</h4>
-                                <button class="btn btn-primary btn-sm" onclick="refreshActivity()">
-                                    <i data-feather="refresh-cw" style="width: 16px; height: 16px;"></i>
-                                    Refresh
-                                </button>
-                            </div>
-                            <div class="card-body">
-                                <div class="timeline" id="recentActivityList">
-                                    @forelse($recentActivity as $activity)
-                                        <div class="timeline-item">
-                                            <div class="timeline-point timeline-point-primary">
-                                                <i data-feather="upload" style="width: 14px; height: 14px;"></i>
-                                            </div>
-                                            <div class="timeline-content">
-                                                <h6 class="mb-1">{{ $activity->original_filename }}</h6>
-                                                <p class="mb-1">
-                                                    Diupload oleh <strong>{{ $activity->user->name }}</strong>
-                                                    @if ($activity->category)
-                                                        ke kategori <span
-                                                            class="badge badge-light-primary">{{ $activity->category->name }}</span>
-                                                    @endif
-                                                </p>
-                                                <small
-                                                    class="text-muted">{{ $activity->created_at->diffForHumans() }}</small>
-                                            </div>
-                                        </div>
-                                    @empty
-                                        <p class="text-muted text-center">Belum ada aktivitas.</p>
-                                    @endforelse
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-6 col-12 mt-3">
-                        <div class="row">
-                            <div class="col-lg-12 col-12">
-                                <div class="card shadow-sm">
-                                    <div class="card-header">
-                                        <h4 class="card-title mb-0">Pengguna Teraktif</h4>
-                                    </div>
-                                    <div class="card-body">
-                                        @forelse($activeUsers as $user)
-                                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="avatar avatar-sm me-3">
-                                                        <div class="avatar-content bg-primary text-white">
-                                                            {{ strtoupper(substr($user->name, 0, 1)) }}
-                                                        </div>
-                                                    </div>
-                                                    <div>
-                                                        <h6 class="mb-0">{{ $user->name }}</h6>
-                                                        <small class="text-muted">{{ $user->documents_count }}
-                                                            dokumen</small>
-                                                    </div>
-                                                </div>
-                                                <div class="badge badge-light-primary">
-                                                    {{ $user->documents_count }}
-                                                </div>
-                                            </div>
-                                        @empty
-                                            <p class="text-muted text-center">Belum ada pengguna aktif.</p>
-                                        @endforelse
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-12 col-12">
-                                <div class="card shadow-sm">
-                                    <div class="card-header">
-                                        <h4 class="card-title mb-0">Kategori</h4>
-                                    </div>
-                                    <div class="card-body">
-                                        @forelse($topCategories as $category)
-                                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="category-icon me-3">
-                                                        <i data-feather="tag"
-                                                            style="width: 18px; height: 18px; color: #7367f0;"></i>
-                                                    </div>
-                                                    <div>
-                                                        <h6 class="mb-0">{{ $category->name }}</h6>
-                                                        <small class="text-muted">{{ $category->documents_count }}
-                                                            dokumen</small>
-                                                    </div>
-                                                </div>
-                                                <div class="progress" style="width: 100px; height: 6px;">
-                                                    <div class="progress-bar" role="progressbar"
-                                                        style="width: {{ ($category->documents_count / $totalDocuments) * 100 }}%"
-                                                        aria-valuenow="{{ $category->documents_count }}"
-                                                        aria-valuemin="0" aria-valuemax="{{ $totalDocuments }}"></div>
-                                                </div>
-                                            </div>
-                                        @empty
-                                            <p class="text-muted text-center">Belum ada kategori.</p>
-                                        @endforelse
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-
                     </div>
 
                     <!-- Enhanced Recent Documents Table -->
-                    <div class="col-12 mt-3">
+                    <div class="col-12 mt-1">
                         <div class="card shadow-sm">
                             <div class="card-header d-flex justify-content-between align-items-center">
                                 <h4 class="card-title mb-0">Dokumen Terbaru</h4>
@@ -349,6 +244,116 @@
                             </div>
                         </div>
                     </div>
+                    @if (Auth::user()->role == 'Admin')
+                        <div class="col-lg-6 col-12 mt-3">
+                            <div class="card shadow-sm">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h4 class="card-title mb-0">Aktivitas Terbaru</h4>
+                                    <button class="btn btn-primary btn-sm" onclick="refreshActivity()">
+                                        <i data-feather="refresh-cw" style="width: 16px; height: 16px;"></i>
+                                        Refresh
+                                    </button>
+                                </div>
+                                <div class="card-body">
+                                    <div class="timeline" id="recentActivityList">
+                                        @forelse($recentActivity as $activity)
+                                            <div class="timeline-item">
+                                                <div class="timeline-point timeline-point-primary">
+                                                    <i data-feather="upload" style="width: 14px; height: 14px;"></i>
+                                                </div>
+                                                <div class="timeline-content">
+                                                    <h6 class="mb-1">{{ $activity->original_filename }}</h6>
+                                                    <p class="mb-1">
+                                                        Diupload oleh <strong>{{ $activity->user->name }}</strong>
+                                                        @if ($activity->category)
+                                                            ke kategori <span
+                                                                class="badge badge-light-primary">{{ $activity->category->name }}</span>
+                                                        @endif
+                                                    </p>
+                                                    <small
+                                                        class="text-muted">{{ $activity->created_at->diffForHumans() }}</small>
+                                                </div>
+                                            </div>
+                                        @empty
+                                            <p class="text-muted text-center">Belum ada aktivitas.</p>
+                                        @endforelse
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6 col-12 mt-3">
+                            <div class="row">
+                                <div class="col-lg-12 col-12">
+                                    <div class="card shadow-sm">
+                                        <div class="card-header">
+                                            <h4 class="card-title mb-0">Pengguna Teraktif</h4>
+                                        </div>
+                                        <div class="card-body">
+                                            @forelse($activeUsers as $user)
+                                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="avatar avatar-sm me-3">
+                                                            <div class="avatar-content bg-primary text-white">
+                                                                {{ strtoupper(substr($user->name, 0, 1)) }}
+                                                            </div>
+                                                        </div>
+                                                        <div>
+                                                            <h6 class="mb-0">{{ $user->name }}</h6>
+                                                            <small class="text-muted">{{ $user->documents_count }}
+                                                                dokumen</small>
+                                                        </div>
+                                                    </div>
+                                                    <div class="badge badge-light-primary">
+                                                        {{ $user->documents_count }}
+                                                    </div>
+                                                </div>
+                                            @empty
+                                                <p class="text-muted text-center">Belum ada pengguna aktif.</p>
+                                            @endforelse
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-12">
+                                    <div class="card shadow-sm">
+                                        <div class="card-header">
+                                            <h4 class="card-title mb-0">Kategori</h4>
+                                        </div>
+                                        <div class="card-body">
+                                            @forelse($topCategories as $category)
+                                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="category-icon me-3">
+                                                            <i data-feather="tag"
+                                                                style="width: 18px; height: 18px; color: #7367f0;"></i>
+                                                        </div>
+                                                        <div>
+                                                            <h6 class="mb-0">{{ $category->name }}</h6>
+                                                            <small class="text-muted">{{ $category->documents_count }}
+                                                                dokumen</small>
+                                                        </div>
+                                                    </div>
+                                                    @php
+                                                        $percentage = $totalDocuments > 0 ? ($category->documents_count / $totalDocuments) * 100 : 0;
+                                                    @endphp
+
+                                                    <div class="progress-bar" role="progressbar"
+                                                        style="width: {{ $percentage }}%"
+                                                        aria-valuenow="{{ $category->documents_count }}"
+                                                        aria-valuemin="0" aria-valuemax="{{ $totalDocuments }}">
+                                                    </div>
+                                                </div>
+                                            @empty
+                                                <p class="text-muted text-center">Belum ada kategori.</p>
+                                            @endforelse
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    @endif
 
                 </div> <!-- /.row -->
             </div> <!-- /.content-body -->
