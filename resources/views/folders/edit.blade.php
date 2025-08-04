@@ -83,7 +83,7 @@
                                             <div class="mb-3">
                                                 <label for="category" class="form-label fw-semibold">Kategori</label>
                                                 <select id="category" 
-                                                        class="form-select @error('category_id') is-invalid @enderror" 
+                                                        class="form-select select2 @error('category_id') is-invalid @enderror" 
                                                         name="category_id">
                                                     <option value="">-- Pilih Kategori (opsional) --</option>
                                                     @foreach ($categories as $category)
@@ -166,7 +166,19 @@
 @endsection
 
 @push('scripts')
+
 <script>
+$(document).ready(function() {
+    if ($.fn.select2) {
+        $('.select2').select2({
+            width: '100%',
+            placeholder: function(){
+                return $(this).attr('placeholder') || '';
+            },
+            allowClear: true
+        });
+    }
+});
 document.addEventListener('DOMContentLoaded', function() {
     const removePasswordCheckbox = document.getElementById('removePassword');
     const passwordInput = document.getElementById('folderPassword');

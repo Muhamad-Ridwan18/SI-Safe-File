@@ -72,7 +72,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4 mb-3 mb-md-0">
-                                                    <select id="categoryFilter" class="form-select form-select-lg">
+                                                    <select id="categoryFilter" class="form-select form-select-lg select2">
                                                         <option value="">Semua Kategori</option>
                                                         @foreach ($categories as $category)
                                                             <option value="{{ $category->id }}">{{ $category->name }}</option>
@@ -80,7 +80,7 @@
                                                     </select>
                                                 </div>
                                                 <div class="col-md-4 mb-3 mb-md-0">
-                                                    <select id="typeFilter" class="form-select form-select-lg">
+                                                    <select id="typeFilter" class="form-select form-select-lg select2">
                                                         <option value="">Semua Tipe</option>
                                                         <option value="folder">Folder Saja</option>
                                                         <option value="document">Dokumen Saja</option>
@@ -372,7 +372,7 @@
 
                     <div class="mb-3">
                         <label for="subfolderCategory" class="form-label fw-semibold">Kategori</label>
-                        <select id="subfolderCategory" class="form-select form-select-lg" name="category_id">
+                        <select id="subfolderCategory" class="form-select form-select-lg select2" name="category_id">
                             <option value="">-- Pilih Kategori (opsional) --</option>
                             @foreach ($categories as $category)
                                 <option value="{{ $category->id }}">{{ $category->name }}</option>
@@ -418,7 +418,7 @@
 
                     <div class="mb-3">
                         <label for="documentCategory" class="form-label fw-semibold">Kategori</label>
-                        <select name="category_id" id="documentCategory" class="form-select form-select-lg">
+                        <select name="category_id" id="documentCategory" class="form-select form-select-lg select2">
                             <option value="">-- Pilih Kategori --</option>
                             @foreach ($categories as $category)
                                 <option value="{{ $category->id }}">{{ $category->name }}</option>
@@ -746,6 +746,16 @@ $(document).ready(function() {
     const typeFilter = $('#typeFilter');
     const contentList = $('#contentList');
     const emptyState = $('#emptyState');
+
+    if ($.fn.select2) {
+        $('.select2').select2({
+            width: '100%',
+            placeholder: function(){
+                return $(this).attr('placeholder') || '';
+            },
+            allowClear: true
+        });
+    }
     
     // Global Search Functionality
     searchInput.on('input', function() {
