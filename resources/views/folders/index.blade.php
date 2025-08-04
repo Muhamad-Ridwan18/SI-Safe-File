@@ -27,22 +27,36 @@
             <div class="content-body">
                 <!-- Dashboard Analytics Start -->
                 <section id="dashboard-analytics">
+                    @if (session('success'))
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
+
+                    @if ($errors->any())
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <h6 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>Error!</h6>
+                            <ul class="mb-0">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
                     <div class="row">
                         <div class="col-md-12">
                             <div class="card">
                                 <div class="card shadow-sm border-0 p-3">
-                                    
                                     <div class="mb-2">
-                                        <button type="button" class="btn btn-success d-flex align-items-center gap-2 mb-2" data-bs-toggle="modal" data-bs-target="#createFolderModal">
-                                            <i class="fas fa-plus-circle fa-lg"></i>
-                                            <span>Buat Folder Baru</span>
-                                        </button>
-                                        <form method="GET" action="{{ route('folder.index') }}"
-                                            class="row g-3 align-items-center" id="filterForm">
-                                            <div class="col-auto">
-                                                <label for="filterDivisi" class="col-form-label fw-semibold">Filter Category:</label>
-                                            </div>
-                                            <div class="col-auto">
+                                        <div class="d-flex flex-wrap align-items-center gap-2 justify-content-between">
+                                            <button type="button" class="btn btn-success d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#createFolderModal">
+                                                <i class="fas fa-plus-circle fa-lg"></i>
+                                                <span>Buat Folder Baru</span>
+                                            </button>
+                                            <form method="GET" action="{{ route('folder.index') }}" class="d-flex align-items-center gap-2" id="filterForm">
+                                                <label for="filterDivisi" class="col-form-label fw-semibold mb-0">Filter Category:</label>
                                                 <select id="filterDivisi" name="category_id" class="form-select"
                                                     onchange="document.getElementById('filterForm').submit();">
                                                     <option value="">Semua Kategori</option>
@@ -53,30 +67,9 @@
                                                         </option>
                                                     @endforeach
                                                 </select>
-                                            </div>
-                                        </form>
-                                        
+                                            </form>
+                                        </div>
                                     </div>
-
-                                    @if (session('success'))
-                                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                            <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
-                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                        </div>
-                                    @endif
-
-                                    @if ($errors->any())
-                                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                            <h6 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>Error!</h6>
-                                            <ul class="mb-0">
-                                                @foreach ($errors->all() as $error)
-                                                    <li>{{ $error }}</li>
-                                                @endforeach
-                                            </ul>
-                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                        </div>
-                                    @endif
-
                                     <!-- Grid Folder View -->
                                     @if ($folders->count())
                                         <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
