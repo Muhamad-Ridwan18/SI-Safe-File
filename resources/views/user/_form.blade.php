@@ -27,7 +27,7 @@
 <div class="form-group row mt-2">
   <label for="inputEmail3" class="col-sm-2 col-form-label">Level</label>
   <div class="col-sm-10">
-    {{ Form::select('role',['Guru' => 'Guru' , 'Kurikulum' => 'Kurikulum'], null, ['class' => 'form-control select2']) }}
+    {{ Form::select('role',['Guru' => 'Guru' , 'Admin' => 'Admin'], null, ['class' => 'form-control select2']) }}
      @if ($errors->has('role')) <span class="help-block" style="color:red">{{ $errors->first('role') }}</span> @endif
   </div>
 </div>

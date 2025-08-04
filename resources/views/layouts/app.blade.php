@@ -114,16 +114,21 @@
                             <span class="menu-title text-truncate" data-i18n="Kategori">Folder</span>
                         </a>
                     </li>
-                    {{-- Dokumen --}}
-
                     {{-- Kategori --}}
+                    @if (Auth::user()->role == 'Admin')
                     <li class="nav-item {!! Request::is('categories*') ? ' active' : '' !!}">
                         <a class="d-flex align-items-center" href="{{ route('categories.index') }}">
                             <i data-feather="list"></i> {{-- Ganti dari square ke list --}}
                             <span class="menu-title text-truncate" data-i18n="Kategori">Kategori</span>
                         </a>
                     </li>
-                    
+                    <li class="nav-item {!! Request::is('user*') ? ' active' : '' !!}">
+                        <a class="d-flex align-items-center" href="{{ route('user.index') }}">
+                            <i data-feather="users"></i> {{-- Ganti dari square ke list --}}
+                            <span class="menu-title text-truncate" data-i18n="Kategori">Users</span>
+                        </a>
+                    </li>
+                    @endif
                 </ul>
             </div>
 

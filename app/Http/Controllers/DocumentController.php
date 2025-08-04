@@ -312,7 +312,6 @@ class DocumentController extends Controller
     {
         $document = Document::findOrFail($id);
         $filePath = $document->encrypted_filename ?? 'pdfs/' . $document->original_filename;
-        // dd($filePath);
         if (Storage::disk('public')->exists($filePath)) {
             return response()->download(storage_path("app/public/$filePath"), $document->original_filename);
         }

@@ -94,7 +94,6 @@
                                                 <option value="">Semua Tipe</option>
                                                 <option value="folder">Folder Saja</option>
                                                 <option value="document">Dokumen Saja</option>
-                                                {{-- <option value="protected">Terproteksi Saja</option> --}}
                                             </select>
                                         </div>
                                         <div class="col-md-2">
@@ -230,6 +229,10 @@
                                                             <li>
                                                                 <a href="#" class="dropdown-item unlock-btn" data-id="{{ $document->id }}" data-name="{{ $document->original_filename ?? $document->filename }}">
                                                                     <i class="fas fa-lock text-warning"></i>Unlock & Download
+                                                                </a>
+                                                            </li>
+                                                            <li><a class="dropdown-item" href="{{ route('documents.download', $document->id) }}">
+                                                                    <i class="fas fa-download text-success"></i>Download
                                                                 </a>
                                                             </li>
                                                         @else    
