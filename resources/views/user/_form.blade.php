@@ -19,7 +19,7 @@
 <div class="form-group row mt-2">
     <label for="inputEmail3" class="col-sm-2 col-form-label">Password</label>
     <div class="col-sm-10">
-       {{ Form::password('password',['class'=>'form-control','placeholder'=>'Password'])}}
+       {{ Form::password('password', ['class'=>'form-control','placeholder'=>'isi jika ingin mengubah password'])}}
        @if ($errors->has('password')) <span class="help-block" style="color:red">{{ $errors->first('password') }}</span> @endif
     </div>
 </div>

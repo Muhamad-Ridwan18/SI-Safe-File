@@ -82,11 +82,14 @@ class UserController extends Controller
     {
         $model = User::find($id);
         $input = $request->all();
-        if($request->password != '')
-        {
-        $input['password'] = Hash::make($request->password);
+
+        // Jika tidak ada request password, pakai password yang sebelumnya
+        if ($request->filled('password')) {
+            $input['password'] = Hash::make($request->password);
+        } else {
+            $input['password'] = $model->password;
         }
-        
+
         $model->update($input);
 
         alert()->success('Data berhasil diubah', 'Berhasil');
