@@ -117,68 +117,57 @@
                                     </div>
                                     
                                 </div>
-                                <!-- Search and Filter Section -->
-
-                                
-
-                                <!-- Tombol aksi utama di atas list -->
-                                
-
                                 <!-- List View -->
                                 <div class="list-group list-group-flush" id="contentList">
                                     @foreach ($folder->children as $subfolder)
-                                        <div class="list-group-item content-item folder-item p-0 border-0 mb-2" 
-                                             data-name="{{ strtolower($subfolder->name) }}" 
-                                             data-category="{{ strtolower($subfolder->category->name ?? '') }}"
-                                             data-category-id="{{ $subfolder->category_id }}"
-                                             data-type="folder"
-                                             data-protected="{{ $subfolder->password ? 'false' : 'true' }}"
-                                             data-password="{{ $subfolder->password}}">
-                                            <div class="d-flex align-items-center p-3 bg-light rounded position-relative" style="z-index:1;">
-                                                <div class="flex-shrink-0 me-3">
-                                                    <i class="fas fa-folder text-warning fs-4"></i>
-                                                </div>
-                                                <div class="flex-grow-1">
-                                                    <div class="d-flex align-items-center justify-content-between">
-                                                        <div>
-                                                            <h6 class="mb-1 fw-semibold">
-                                                                <a href="{{ route('folder.show', $subfolder->id) }}" class="text-decoration-none text-dark">
-                                                                    {{ $subfolder->name }}
-                                                                </a>
+                                        <a href="{{ route('folder.show', $subfolder->id) }}">
+                                            <div class="list-group-item content-item folder-item p-0 border-0 mb-2" 
+                                                 data-name="{{ strtolower($subfolder->name) }}" 
+                                                 data-category="{{ strtolower($subfolder->category->name ?? '') }}"
+                                                 data-category-id="{{ $subfolder->category_id }}"
+                                                 data-type="folder"
+                                                 data-protected="{{ $subfolder->password ? 'false' : 'true' }}"
+                                                 data-password="{{ $subfolder->password}}">
+                                                <div class="d-flex align-items-center p-3 bg-light rounded position-relative" style="z-index:1;">
+                                                    <div class="w-100">
+                                                        <div class="d-flex align-items-center mb-2">
+                                                            <i class="fas fa-folder text-warning fs-4 me-3"></i>
+                                                            <h6 class="mb-0 fw-semibold">
+                                                                {{ $subfolder->name }}
                                                             </h6>
-                                                            <div class="d-flex align-items-center gap-3 text-muted small">
-                                                                @if($subfolder->category)
-                                                                    <span><i class="fas fa-tag me-1"></i>{{ $subfolder->category->name }}</span>
-                                                                @endif
-                                                                <span><i class="fas fa-folder me-1"></i>{{ $subfolder->children->count() }} subfolder</span>
-                                                                <span><i class="fas fa-file me-1"></i>{{ $subfolder->documents->count() }} dokumen</span>
-                                                                @if ($subfolder->password)
-                                                                    <span class="text-warning"><i class="fas fa-lock me-1"></i>Terproteksi</span>
-                                                                @endif
-                                                            </div>
+                                                        </div>
+                                                        <div class="d-flex align-items-center gap-3 text-muted small ms-5">
+                                                            @if($subfolder->category)
+                                                                <span><i class="fas fa-tag me-1"></i>{{ $subfolder->category->name }}</span>
+                                                            @endif
+                                                            <span><i class="fas fa-folder me-1"></i>{{ $subfolder->children->count() }} subfolder</span>
+                                                            <span><i class="fas fa-file me-1"></i>{{ $subfolder->documents->count() }} dokumen</span>
+                                                            @if ($subfolder->password)
+                                                                <span class="text-warning"><i class="fas fa-lock me-1"></i>Terproteksi</span>
+                                                            @endif
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <!-- Dropdown pindah ke root agar tidak terpotong -->
-                                                <div class="dropdown ms-2" style="position: absolute; top: 16px; right: 16px;">
-                                                    <button class="btn btn-sm btn-light rounded-circle shadow-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                        <i class="fas fa-ellipsis-v"></i>
-                                                    </button>
-                                                    <ul class="dropdown-menu dropdown-menu-end shadow border-0">
-                                                        <li><a class="dropdown-item" href="{{ route('folder.edit', $subfolder->id) }}">
-                                                            <i class="fas fa-edit text-primary"></i>Edit
-                                                        </a></li>
-                                                        <li><hr class="dropdown-divider"></li>
-                                                        <li><a class="dropdown-item text-danger delete-folder" href="#" 
-                                                               data-id="{{ $subfolder->id }}" 
-                                                               data-name="{{ $subfolder->name }}"
-                                                               data-password="{{ $subfolder->password}}">
-                                                            <i class="fas fa-trash"></i>Hapus
-                                                        </a></li>
-                                                    </ul>
+                                                    <!-- Dropdown pindah ke root agar tidak terpotong -->
+                                                    <div class="dropdown ms-2" style="position: absolute; top: 16px; right: 16px;">
+                                                        <button class="btn btn-sm btn-light rounded-circle shadow-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                            <i class="fas fa-ellipsis-v"></i>
+                                                        </button>
+                                                        <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                                                            <li><a class="dropdown-item" href="{{ route('folder.edit', $subfolder->id) }}">
+                                                                <i class="fas fa-edit text-primary"></i>Edit
+                                                            </a></li>
+                                                            <li><hr class="dropdown-divider"></li>
+                                                            <li><a class="dropdown-item text-danger delete-folder" href="#" 
+                                                                   data-id="{{ $subfolder->id }}" 
+                                                                   data-name="{{ $subfolder->name }}"
+                                                                   data-password="{{ $subfolder->password}}">
+                                                                <i class="fas fa-trash"></i>Hapus
+                                                            </a></li>
+                                                        </ul>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </a>
                                     @endforeach
                                     @foreach ($folder->documents as $document)
                                         <div class="list-group-item content-item document-item p-0 border-0 mb-2" 
@@ -208,34 +197,37 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <!-- Dropdown pindah ke root agar tidak terpotong -->
                                                 <div class="dropdown ms-2" style="position: absolute; top: 16px; right: 16px;">
-                                                    <button class="btn btn-sm btn-light rounded-circle shadow-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                        <i class="fas fa-ellipsis-v"></i>
+                                                    <button class="btn btn-xs btn-light rounded-circle shadow-sm dropdown-toggle p-1" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 0.9rem; min-width: 28px; height: 28px;">
+                                                        <i class="fas fa-ellipsis-v" style="font-size: 1rem;"></i>
                                                     </button>
-                                                    <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                                                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 " style="z-index: 2; min-width: 120px; font-size: 0.92rem;">
                                                         @if ($document->secret_key)
                                                             <li>
-                                                                <a href="#" class="dropdown-item unlock-btn" data-id="{{ $document->id }}" data-name="{{ $document->original_filename ?? $document->filename }}">
-                                                                    <i class="fas fa-lock text-warning"></i>Unlock & Download
+                                                                <a href="#" class="dropdown-item unlock-btn px-2" style="font-size: 0.92rem;" data-id="{{ $document->id }}" data-name="{{ $document->original_filename ?? $document->filename }}">
+                                                                    <i class="fas fa-lock text-warning me-1" style="font-size: 1rem;"></i>Unlock & Download
                                                                 </a>
                                                             </li>
-                                                            <li><a class="dropdown-item" href="{{ route('documents.download', $document->id) }}">
-                                                                    <i class="fas fa-download text-success"></i>Download
+                                                            <li>
+                                                                <a class="dropdown-item px-2" style="font-size: 0.92rem;" href="{{ route('documents.download', $document->id) }}">
+                                                                    <i class="fas fa-download text-success me-1" style="font-size: 1rem;"></i>Download
                                                                 </a>
                                                             </li>
                                                         @else    
-                                                            <li><a class="dropdown-item" href="{{ route('documents.download', $document->id) }}">
-                                                                <i class="fas fa-download text-success"></i>Download
-                                                            </a></li>
+                                                            <li>
+                                                                <a class="dropdown-item px-2" style="font-size: 0.92rem;" href="{{ route('documents.download', $document->id) }}">
+                                                                    <i class="fas fa-download text-success me-1" style="font-size: 1rem;"></i>Download
+                                                                </a>
+                                                            </li>
                                                         @endif
-                                                        <li><hr class="dropdown-divider"></li>
-                                                        <li><a class="dropdown-item text-danger delete-document" href="#" 
+                                                        <li style="z-index: 1000;">
+                                                            <a class="dropdown-item text-danger delete-document py-1 px-2" style="font-size: 0.92rem; z-index: 1000" href="#" 
                                                                data-id="{{ $document->id }}" 
                                                                data-name="{{ $document->original_filename ?? $document->filename }}"
                                                                data-secret="{{ $document->secret_key}}">
-                                                            <i class="fas fa-trash"></i>Hapus
-                                                        </a></li>
+                                                                <i class="fas fa-trash me-1" style="font-size: 1rem;"></i>Hapus
+                                                            </a>
+                                                        </li>
                                                     </ul>
                                                 </div>
                                             </div>
@@ -1325,22 +1317,151 @@ $(document).ready(function() {
     });
 });
 
-// Dropdown menu fix: position fixed saat open agar tidak tertutup
 $(document).on('show.bs.dropdown', '.dropdown', function () {
-    var $menu = $(this).find('.dropdown-menu');
-    var offset = $menu.offset();
-    var height = $menu.outerHeight();
-    var winHeight = $(window).height();
-    // Jika dropdown akan keluar dari viewport bawah, geser ke atas
-    if (offset && offset.top + height > winHeight) {
-        $menu.css({ top: 'auto', bottom: '100%' });
-    } else {
-        $menu.css({ top: '', bottom: '' });
+    var $dropdown = $(this);
+    var $menu = $dropdown.find('.dropdown-menu');
+    
+    // Pastikan element ada dan merupakan DOM element yang valid
+    if ($menu.length > 0 && $menu[0] && $menu[0].nodeType === 1) {
+        try {
+            // Tunggu sebentar untuk memastikan dropdown sudah ter-render
+            setTimeout(function() {
+                if ($menu.is(':visible')) {
+                    var offset = $menu.offset();
+                    var height = $menu.outerHeight();
+                    var winHeight = $(window).height();
+                    
+                    // Jika dropdown akan keluar dari viewport bawah, geser ke atas
+                    if (offset && offset.top + height > winHeight) {
+                        $menu.addClass('dropdown-menu-up');
+                    } else {
+                        $menu.removeClass('dropdown-menu-up');
+                    }
+                    
+                    // Set z-index yang tinggi
+                    $menu.css('z-index', 2000);
+                }
+            }, 10);
+        } catch (error) {
+            console.warn('Error positioning dropdown:', error);
+        }
     }
-    $menu.css('z-index', 2000);
 });
+
 $(document).on('hide.bs.dropdown', '.dropdown', function () {
-    $(this).find('.dropdown-menu').css({ top: '', bottom: '' });
+    var $menu = $(this).find('.dropdown-menu');
+    $menu.removeClass('dropdown-menu-up');
+});
+
+// Alternative approach: Use CSS-only solution for dropdown positioning
+$(document).ready(function() {
+    // Add CSS class untuk dropdown positioning
+    $('<style>').prop('type', 'text/css').html(`
+        .dropdown-menu-up {
+            top: auto !important;
+            bottom: 100% !important;
+            transform: translateY(-2px);
+        }
+        
+        .dropdown-menu {
+            position: absolute !important;
+            z-index: 2000 !important;
+            will-change: transform;
+        }
+        
+        /* Fix untuk dropdown yang terpotong */
+        .list-group-item .dropdown {
+            position: static;
+        }
+        
+        .list-group-item .dropdown-menu {
+            position: absolute;
+            right: 0;
+            left: auto;
+            min-width: 160px;
+            margin-top: 0.125rem;
+        }
+        
+        /* Responsive dropdown */
+        @media (max-width: 768px) {
+            .dropdown-menu {
+                position: fixed !important;
+                top: auto !important;
+                left: 1rem !important;
+                right: 1rem !important;
+                width: auto !important;
+                transform: none !important;
+            }
+        }
+    `).appendTo('head');
+});
+
+// Tambahan: Handle click event untuk dropdown toggle
+$(document).on('click', '.dropdown-toggle', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    var $dropdown = $(this).closest('.dropdown');
+    var $menu = $dropdown.find('.dropdown-menu');
+    
+    // Close other dropdowns
+    $('.dropdown-menu.show').not($menu).removeClass('show');
+    $('.dropdown.show').not($dropdown).removeClass('show');
+    
+    // Toggle current dropdown
+    $dropdown.toggleClass('show');
+    $menu.toggleClass('show');
+    
+    // Position dropdown if needed
+    if ($menu.hasClass('show')) {
+        positionDropdown($dropdown, $menu);
+    }
+});
+
+// Function untuk positioning dropdown
+function positionDropdown($dropdown, $menu) {
+    try {
+        setTimeout(function() {
+            if ($menu.hasClass('show')) {
+                var dropdownRect = $dropdown[0].getBoundingClientRect();
+                var menuHeight = $menu.outerHeight();
+                var windowHeight = $(window).height();
+                var scrollTop = $(window).scrollTop();
+                
+                // Cek apakah dropdown akan keluar dari viewport
+                if (dropdownRect.bottom + menuHeight > windowHeight) {
+                    $menu.addClass('dropdown-menu-up');
+                } else {
+                    $menu.removeClass('dropdown-menu-up');
+                }
+            }
+        }, 10);
+    } catch (error) {
+        console.warn('Error positioning dropdown:', error);
+    }
+}
+
+// Close dropdown when clicking outside
+$(document).on('click', function(e) {
+    if (!$(e.target).closest('.dropdown').length) {
+        $('.dropdown-menu.show').removeClass('show');
+        $('.dropdown.show').removeClass('show');
+    }
+});
+
+// Prevent dropdown close when clicking inside menu
+$(document).on('click', '.dropdown-menu', function(e) {
+    e.stopPropagation();
+});
+
+// Handle dropdown item clicks
+$(document).on('click', '.dropdown-item', function(e) {
+    // Close dropdown after item click (except for items that prevent default)
+    if (!$(this).hasClass('no-close')) {
+        var $dropdown = $(this).closest('.dropdown');
+        $dropdown.removeClass('show');
+        $dropdown.find('.dropdown-menu').removeClass('show');
+    }
 });
 </script>
 @endpush

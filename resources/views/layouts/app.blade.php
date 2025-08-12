@@ -87,7 +87,7 @@
                                     </g>
                                 </svg>
                             </span> --}}
-                            <h2 class="brand-text">SAFILE</h2>
+                            <h2 class="brand-text">MI NURUL FALAH</h2>
                         </a>
                     </li>
                     <li class="nav-item nav-toggle">

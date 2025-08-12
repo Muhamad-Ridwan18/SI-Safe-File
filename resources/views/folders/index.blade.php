@@ -57,7 +57,7 @@
                                             </button>
                                             <form method="GET" action="{{ route('folder.index') }}" class="d-flex align-items-center gap-2" id="filterForm">
                                                 <label for="filterDivisi" class="col-form-label fw-semibold mb-0">Filter Category:</label>
-                                                <select id="filterDivisi" name="category_id" class="form-select"
+                                                <select id="filterDivisi" name="category_id" class="form-select select2"
                                                     onchange="document.getElementById('filterForm').submit();">
                                                     <option value="">Semua Kategori</option>
                                                     @foreach ($categories as $divisi)
@@ -76,8 +76,30 @@
                                             @foreach ($folders as $folder)
                                                 <div class="col">
                                                     <div class="card h-100 folder-card border shadow-sm hover-shadow position-relative">
-                                                        <!-- Dropdown Menu -->
                                                         @if ($folder->user_id !== '5d759032-37d7-4f6b-b5d2-110b4b521a10')
+                                                        <div class="dropdown position-absolute" style="top: 10px; right: 10px; z-index: 20;">
+                                                            <button class="btn btn-sm btn-light rounded-circle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                <i class="fas fa-ellipsis-v"></i>
+                                                            </button>
+                                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                                <li>
+                                                                    <a class="dropdown-item" href="{{ route('folder.edit', $folder->id) }}">
+                                                                        <i class="fas fa-edit me-2"></i>Edit
+                                                                    </a>
+                                                                </li>
+                                                                <li><hr class="dropdown-divider"></li>
+                                                                <li>
+                                                                    <a class="dropdown-item text-danger delete-folder" href="#" 
+                                                                        data-id="{{ $folder->id }}" 
+                                                                        data-name="{{ $folder->name }}"
+                                                                        data-password="{{ $folder->password}}">
+                                                                        <i class="fas fa-trash"></i>Hapus
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                        @endif
+                                                        @if (auth()->id() === '5d759032-37d7-4f6b-b5d2-110b4b521a10')
                                                         <div class="dropdown position-absolute" style="top: 10px; right: 10px; z-index: 20;">
                                                             <button class="btn btn-sm btn-light rounded-circle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                                                 <i class="fas fa-ellipsis-v"></i>
